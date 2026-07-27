@@ -4,6 +4,8 @@ use CodeIgniter\Router\RouteCollection;
 
 /** @var RouteCollection $routes */
 $routes->get('/', 'CompanyProfileController::index');
+$routes->get('monitoring-server', 'CompanyProfileController::monitoringServer');
+$routes->get('jasa-monitoring-server', 'CompanyProfileController::monitoringServer');
 
 $routes->get('register', 'AuthController::register');
 $routes->post('register', 'AuthController::register');

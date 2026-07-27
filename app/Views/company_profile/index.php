@@ -105,8 +105,8 @@
                             <img src="<?= base_url('assets/img/tentang-kami-monitoring-server.png') ?>" alt="Monitoring Server">
                         </div>
                         <h3>Monitoring Server</h3>
-                        <p>Pantau server secara real-time dan dapatkan notifikasi langsung saat terjadi masalah.</p>
-                        <a href="<?= base_url('register') ?>">Selengkapnya</a>
+                        <p>Pantau server secara real-time dan dapatkan notifikasi langsung saat terjadi masalah — layanan <strong>gratis</strong>.</p>
+                        <a href="<?= base_url('monitoring-server') ?>">Selengkapnya · Gratis</a>
                     </article>
 
                     <article class="service-card-v2" data-reveal>
@@ -206,7 +206,7 @@
             <div data-reveal>
                 <h4>Hubungi Kami</h4>
                 <ul>
-                    <li><a href="https://wa.me/628999188009" target="_blank" rel="noopener">08999188009</a></li>
+                    <li><a href="https://wa.me/628999188009" target="_blank" rel="noopener">Chat WhatsApp</a></li>
                     <li><a href="#kontak">Konsultasi</a></li>
                 </ul>
             </div>
