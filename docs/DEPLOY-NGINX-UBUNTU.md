@@ -277,38 +277,40 @@ Kalau 404 → masalah Nginx/symlink. Kalau 200 tapi halaman masih polos → hard
 
 ---
 
-## 5. Tahap 2 — Domain `https://internsoft.my.id` (tanpa prefix)
+## 5. Pindah ke `https://internsoft.my.id` + matikan `/internsoft`
+
+Tujuan akhir:
+
+| Sebelum | Sesudah |
+|---------|---------|
+| `http://api.kopperpensibdn.com/internsoft/` | **mati** (404 / hilang) |
+| `http://198.167.141.15/internsoft/` | **mati** |
+| — | `https://internsoft.my.id/` **hidup + SSL** |
+| `/Api/`, `/wa/` di api.kopperpensibdn.com | **tetap jalan** (tidak diubah) |
 
 ### 5.1 DNS
 
-Arahkan A record:
+Di DNS domain `internsoft.my.id`, buat A record:
 
 ```text
-internsoft.my.id  →  IP publik server
+@     A    198.167.141.15
+www   A    198.167.141.15
 ```
 
-### 5.2 Update `.env`
+Cek propagasi:
 
 ```bash
-sudo nano /var/www/internsoft/.env
+dig +short internsoft.my.id
+# harus keluar 198.167.141.15
 ```
 
-Ganti jadi:
-
-```ini
-CI_ENVIRONMENT = production
-app.baseURL = 'https://internsoft.my.id/'
-app.forceGlobalSecureRequests = true
-```
-
-### 5.3 Nginx domain + SSL
+### 5.2 Buat site Nginx khusus domain (tanpa prefix)
 
 ```bash
-sudo apt install -y certbot python3-certbot-nginx
 sudo nano /etc/nginx/sites-available/internsoft.my.id
 ```
 
-Isi HTTP dulu (untuk certbot):
+Isi:
 
 ```nginx
 server {
@@ -325,17 +327,20 @@ server {
     }
 
     location ~ \.php$ {
-        include snippets/fastcgi-php.conf;
-        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+        include fastcgi_params;
+        fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_index index.php;
         fastcgi_read_timeout 120;
+        fastcgi_buffers 16 16k;
+        fastcgi_intercept_errors on;
     }
 
     location ~ /\. {
         deny all;
     }
 
-    # Jangan expose folder app/writable lewat web
+    # Jangan expose folder sensitif (kalau ada yang salah root)
     location ~ ^/(app|writable|tests|vendor|spark)/ {
         deny all;
     }
@@ -350,25 +355,129 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
-SSL:
+Tes dulu HTTP:
+
+```text
+http://internsoft.my.id/
+```
+
+### 5.3 Pasang SSL (Certbot)
 
 ```bash
+sudo apt install -y certbot python3-certbot-nginx
 sudo certbot --nginx -d internsoft.my.id -d www.internsoft.my.id
 ```
 
-Certbot biasanya otomatis menambah redirect HTTPS.
+Ikuti prompt (email, agree ToS). Certbot akan:
+- buat sertifikat Let's Encrypt
+- ubah config jadi HTTPS
+- redirect `http://` → `https://`
 
-### 5.4 Opsional: matikan akses IP/prefix lama
+Cek:
 
-Kalau sudah full domain, bisa nonaktifkan site IP:
+```text
+https://internsoft.my.id/
+https://internsoft.my.id/login
+```
+
+Perpanjang otomatis biasanya sudah ada via timer:
 
 ```bash
-sudo rm -f /etc/nginx/sites-enabled/internsoft
+sudo systemctl status certbot.timer
+```
+
+### 5.4 Update `.env` ke domain HTTPS
+
+```bash
+sudo nano /var/www/internsoft/.env
+```
+
+```ini
+CI_ENVIRONMENT = production
+app.baseURL = 'https://internsoft.my.id/'
+app.indexPage = ''
+app.forceGlobalSecureRequests = true
+```
+
+Simpan, lalu clear cache CI kalau ada:
+
+```bash
+sudo rm -f /var/www/internsoft/writable/cache/*
+```
+
+### 5.5 Matikan akses lama `/internsoft` di site `default`
+
+Ini yang mematikan `http://api.kopperpensibdn.com/internsoft/`.
+
+```bash
+sudo nano /etc/nginx/sites-available/default
+```
+
+**Hapus seluruh blok** yang terkait Internsoft, misalnya:
+
+- `location = /internsoft { ... }`
+- `location /internsoft/ { ... }`
+- `location @internsoft { ... }`
+- atau blok `alias` / nested PHP `/internsoft` lainnya
+
+**Jangan hapus** yang ini:
+
+- `location /Api/`
+- `location /uploads/`
+- `location /wa/`
+- `location ~ \.php$` (untuk API lama)
+
+Opsional — ganti jadi 404 eksplisit (kalau mau pesan jelas):
+
+```nginx
+    location /internsoft {
+        return 404;
+    }
+```
+
+Hapus symlink (opsional, biar bersih):
+
+```bash
+sudo rm -f /var/www/html/internsoft
+```
+
+Reload:
+
+```bash
 sudo nginx -t
 sudo systemctl reload nginx
 ```
 
-Atau biarkan IP tetap hidup untuk internal, tapi ingat `baseURL` sudah domain — link generate akan mengarah ke `https://internsoft.my.id`.
+### 5.6 Checklist akhir
+
+| URL | Harapan |
+|-----|---------|
+| `https://internsoft.my.id/` | Internsoft OK + CSS |
+| `https://internsoft.my.id/login` | Login OK |
+| `http://internsoft.my.id/` | Redirect ke HTTPS |
+| `http://api.kopperpensibdn.com/internsoft/` | **404 / mati** |
+| `http://api.kopperpensibdn.com/Api/` | API lama tetap jalan |
+| `http://api.kopperpensibdn.com/wa/` | WA proxy tetap jalan |
+
+### 5.7 Troubleshooting domain
+
+**DNS belum mengarah**
+
+```bash
+dig +short internsoft.my.id
+```
+
+**Certbot gagal** — pastikan port 80 terbuka ke internet dan DNS sudah benar.
+
+**CSS pecah di domain** — cek `app.baseURL` sudah `https://internsoft.my.id/` (dengan `/` di akhir), hard refresh.
+
+**API lama ikut rusak** — berarti kamu tidak sengaja menghapus `location /Api/` atau `/wa/`. Restore dari backup config:
+
+```bash
+sudo nano /etc/nginx/sites-available/default
+# atau
+sudo nginx -t
+```
 
 ---
 
@@ -448,11 +557,11 @@ ls /run/php/
 ```text
 1. apt install nginx + php8.3-fpm + composer
 2. git clone → composer install → chown writable
-3. .env baseURL = http://IP/internsoft/
-4. Nginx location /internsoft (atau symlink ke /var/www/html/internsoft)
-5. Tes IP
-6. DNS A record → IP
+3. Sementara: /internsoft di site default + baseURL prefix
+4. DNS A record internsoft.my.id → 198.167.141.15
+5. Buat site Nginx internsoft.my.id (root = public/)
+6. certbot --nginx -d internsoft.my.id -d www.internsoft.my.id
 7. .env baseURL = https://internsoft.my.id/
-8. Nginx root = .../public + certbot
+8. Hapus location /internsoft dari default (Api/wa tetap)
 9. Cron: php spark monitor:run
 ```
