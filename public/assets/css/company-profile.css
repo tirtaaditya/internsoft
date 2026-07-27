@@ -355,8 +355,8 @@ body.page-loading {
     gap: 10px;
 }
 
-.menu-login-mobile {
-    display: none;
+.nav-login {
+    white-space: nowrap;
 }
 
 .nav-toggle {
@@ -2241,8 +2241,10 @@ body.modal-open {
         height: 42px;
     }
 
-    .nav-login-desktop {
-        display: none;
+    .nav-login {
+        padding: 8px 12px;
+        font-size: 0.84rem;
+        min-height: 40px;
     }
 
     .nav-toggle {
@@ -2315,13 +2317,6 @@ body.modal-open {
     .menu-links a.is-active {
         background: rgba(47, 144, 255, 0.12);
         color: #8ec9ff;
-    }
-
-    .menu-login-mobile {
-        display: inline-flex;
-        width: 100%;
-        margin-top: 8px;
-        justify-content: center;
     }
 
     .auth-page {
