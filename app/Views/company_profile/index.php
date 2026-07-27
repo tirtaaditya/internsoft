@@ -36,11 +36,10 @@
                             <a href="#layanan">Layanan</a>
                             <a href="#tentang">Tentang Kami</a>
                             <a href="#kontak">Kontak</a>
-                            <a href="<?= base_url('login') ?>" class="btn btn-primary menu-login-mobile">Masuk</a>
                         </nav>
 
                         <div class="nav-end">
-                            <a href="<?= base_url('login') ?>" class="btn btn-primary nav-login-desktop">Masuk</a>
+                            <a href="<?= base_url('login') ?>" class="btn btn-primary nav-login">Masuk</a>
                             <button
                                 type="button"
                                 class="nav-toggle"
