@@ -101,127 +101,105 @@ Di server ini sudah ada aplikasi di `/etc/nginx/sites-available/default`
 (`/Api/`, `/uploads/`, `/wa/`). **Jangan buat site baru yang merebut port 80.**
 Cukup tambah path `/internsoft` di file `default`.
 
-Contoh akses sementara:
+Contoh akses sementara (keduanya harus boleh):
 
 ```text
-http://198.167.141.15/internsoft
+http://198.167.141.15/internsoft/
+http://api.kopperpensibdn.com/internsoft/
 ```
 
-### 4.1 Symlink public ke document root
+### 4.1 Pastikan file project ada
 
-Karena `root` Nginx kamu sudah `/var/www/html`:
+```bash
+ls -la /var/www/internsoft/public/index.php
+ls -la /var/www/internsoft/public/assets/css/company-profile.css
+```
+
+### 4.2 Symlink (opsional, untuk asset static)
 
 ```bash
 sudo ln -sfn /var/www/internsoft/public /var/www/html/internsoft
-ls -la /var/www/html/internsoft
+ls -la /var/www/html/internsoft/index.php
 ```
 
-### 4.2 Edit `.env`
+### 4.3 Edit `.env`
+
+Pakai host yang dibuka di browser:
 
 ```ini
 CI_ENVIRONMENT = production
-app.baseURL = 'http://198.167.141.15/internsoft/'
+app.baseURL = 'http://api.kopperpensibdn.com/internsoft/'
 app.indexPage = ''
 ```
 
-Trailing slash `/` di akhir `baseURL` wajib.  
-`app.indexPage = ''` penting supaya URL bersih (tanpa `index.php`) di balik Nginx rewrite.
+Trailing slash `/` di akhir `baseURL` wajib.
 
-### 4.3 Tambah location di `default`
+### 4.4 Config Nginx yang memperbaiki "File not found."
+
+Pesan **`File not found.`** biasanya dari PHP-FPM (`Primary script unknown`),
+bukan dari CodeIgniter. Artinya path `SCRIPT_FILENAME` salah.
 
 ```bash
 sudo nano /etc/nginx/sites-available/default
 ```
 
-Tambahkan **di dalam** `server { ... }` yang sudah ada, **sebelum**
-`location / { return 444; }` supaya `/internsoft` tidak tertolak:
+Hapus blok `/internsoft` lama, lalu tempel ini **SEBELUM** `location ~ \.php$`:
 
 ```nginx
     # ===== Internsoft (CI4) =====
-    location /internsoft {
-        try_files $uri $uri/ /internsoft/index.php?$query_string;
+    # Butuh: sudo ln -sfn /var/www/internsoft/public /var/www/html/internsoft
+    location = /internsoft {
+        return 301 /internsoft/;
     }
 
-    location ~ ^/internsoft/index\.php(/|$) {
+    location /internsoft/ {
+        # File statis (css/img/js) dilayani lewat symlink di /var/www/html/internsoft
+        try_files $uri $uri/ @internsoft;
+    }
+
+    location @internsoft {
         include fastcgi_params;
         fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        fastcgi_index index.php;
+        # Path absolut — hindari "File not found." / Primary script unknown
+        fastcgi_param SCRIPT_FILENAME /var/www/internsoft/public/index.php;
+        fastcgi_param SCRIPT_NAME /internsoft/index.php;
+        fastcgi_param REQUEST_URI $request_uri;
+        fastcgi_param DOCUMENT_ROOT /var/www/internsoft/public;
         fastcgi_read_timeout 120;
         fastcgi_buffers 16 16k;
         fastcgi_intercept_errors on;
     }
-
-    # Blokir PHP lain di folder internsoft (kecuali index.php di atas)
-    location ~ ^/internsoft/(.+\.php)$ {
-        deny all;
-    }
     # ===== /Internsoft =====
 ```
 
-Urutan lokasi yang aman di file `default` kira-kira:
+> Jangan nested `location ~ \.php` di dalam `alias` — itu sumber paling umum `File not found.`
 
-```text
-1. location ~ \.php$          (yang sudah ada — untuk /Api dll)
-2. location /internsoft       (baru)
-3. location ~ ^/internsoft/index\.php  (baru)
-4. location ~ ^/internsoft/(.+\.php)$  (baru)
-5. location /                 (return 444 — biarkan)
-6. location /Api/ ...
-7. location /wa/ ...
-```
-
-> Catatan: di Nginx, regex `location ~ \.php$` bisa menangkap
-> `/internsoft/index.php` lebih dulu. Kalau PHP Internsoft aneh/404,
-> pindahkan blok `location ~ ^/internsoft/index\.php` **di atas**
-> `location ~ \.php$`, atau ubah jadi `location ^~ /internsoft/`
-> untuk static + rewrite terpisah.
-
-Varian lebih aman (prefix menang sebelum regex PHP global):
-
-```nginx
-    # Letakkan SEBELUM "location ~ \.php$"
-    location ^~ /internsoft/ {
-        try_files $uri $uri/ /internsoft/index.php?$query_string;
-
-        location ~ \.php(?:$|/) {
-            include fastcgi_params;
-            fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
-            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-            fastcgi_index index.php;
-            fastcgi_read_timeout 120;
-            fastcgi_buffers 16 16k;
-            fastcgi_intercept_errors on;
-        }
-    }
-
-    location = /internsoft {
-        return 301 /internsoft/;
-    }
-```
-
-### 4.4 Reload (tanpa hapus default)
+Diagnosa:
 
 ```bash
-# Pastikan site internsoft terpisah TIDAK aktif
-sudo rm -f /etc/nginx/sites-enabled/internsoft
+curl -I http://127.0.0.1/internsoft/ -H 'Host: api.kopperpensibdn.com'
+sudo tail -n 30 /var/log/nginx/error.log
+```
 
+### 4.5 Reload (tanpa hapus default)
+
+```bash
+sudo rm -f /etc/nginx/sites-enabled/internsoft
 sudo nginx -t
 sudo systemctl reload nginx
+sudo systemctl reload php8.3-fpm
 ```
 
 Cek:
 
 ```text
-http://198.167.141.15/Api/          → aplikasi lama
-http://198.167.141.15/wa/           → aplikasi lama
-http://198.167.141.15/internsoft/   → Internsoft
-http://198.167.141.15/internsoft/login
+http://api.kopperpensibdn.com/Api/        → aplikasi lama
+http://api.kopperpensibdn.com/wa/         → aplikasi lama
+http://api.kopperpensibdn.com/internsoft/ → Internsoft
+http://198.167.141.15/internsoft/         → Internsoft
 ```
 
-Host sudah diizinkan di config kamu (`198.167.141.15`), jadi akses via IP aman.
-
-### 4.5 Kalau sempat merusak aplikasi lama
+Kalau sempat merusak aplikasi lama:
 
 ```bash
 sudo ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
