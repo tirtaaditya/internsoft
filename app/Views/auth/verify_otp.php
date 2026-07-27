@@ -10,8 +10,8 @@
 
     <div class="auth-shell auth-shell-narrow">
         <section class="auth-card">
-            <a href="/" class="auth-brand auth-brand-center">
-                <img src="/assets/img/logo-internsoft.png" alt="Internsoft" class="auth-brand-logo">
+            <a href="<?= base_url('/') ?>" class="auth-brand auth-brand-center">
+                <img src="<?= base_url('assets/img/logo-internsoft.png') ?>" alt="Internsoft" class="auth-brand-logo">
                 <span>Internsoft</span>
             </a>
 
@@ -40,7 +40,7 @@
                 <div class="alert error"><?= esc($error) ?></div>
             <?php endif; ?>
 
-            <form method="post" action="/verify-otp" class="auth-form">
+            <form method="post" action="<?= base_url('verify-otp') ?>" class="auth-form">
                 <?= csrf_field() ?>
 
                 <div class="field">
@@ -52,12 +52,12 @@
                 <button type="submit" class="btn btn-primary btn-block">Verifikasi OTP</button>
             </form>
 
-            <form method="post" action="/resend-otp" class="auth-resend">
+            <form method="post" action="<?= base_url('resend-otp') ?>" class="auth-resend">
                 <?= csrf_field() ?>
                 <button type="submit" class="btn btn-outline btn-block">Kirim Ulang OTP</button>
             </form>
 
-            <a href="/" class="auth-back">Kembali ke beranda</a>
+            <a href="<?= base_url('/') ?>" class="auth-back">Kembali ke beranda</a>
         </section>
     </div>
 </main>

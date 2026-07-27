@@ -82,7 +82,7 @@ class AuthController extends BaseController
                     session()->setFlashdata('success', 'Akun berhasil dibuat. OTP sudah dikirim ke WhatsApp Anda.');
                 }
 
-                return redirect()->to('/verify-otp');
+                return redirect()->to('verify-otp');
             } catch (\Throwable $e) {
                 log_message('error', 'Register failed: {message}', ['message' => $e->getMessage()]);
 
@@ -101,7 +101,7 @@ class AuthController extends BaseController
         $otpUserId = (int) session()->get('otp_user_id');
 
         if ($otpUserId <= 0) {
-            return redirect()->to('/login');
+            return redirect()->to('login');
         }
 
         $userModel = new UserModel();
@@ -109,12 +109,12 @@ class AuthController extends BaseController
 
         if (! $user) {
             session()->remove('otp_user_id');
-            return redirect()->to('/register');
+            return redirect()->to('register');
         }
 
         if ((int) $user['is_wa_verified'] === 1) {
             session()->remove('otp_user_id');
-            return redirect()->to('/login');
+            return redirect()->to('login');
         }
 
         if ($this->request->is('post')) {
@@ -163,7 +163,7 @@ class AuthController extends BaseController
                 'is_logged_in'    => true,
             ]);
 
-            return redirect()->to('/dashboard');
+            return redirect()->to('dashboard');
         }
 
         return view('auth/verify_otp', [
@@ -177,7 +177,7 @@ class AuthController extends BaseController
         $otpUserId = (int) session()->get('otp_user_id');
 
         if ($otpUserId <= 0) {
-            return redirect()->to('/login');
+            return redirect()->to('login');
         }
 
         $userModel = new UserModel();
@@ -185,7 +185,7 @@ class AuthController extends BaseController
 
         if (! $user || (int) $user['is_wa_verified'] === 1) {
             session()->remove('otp_user_id');
-            return redirect()->to('/login');
+            return redirect()->to('login');
         }
 
         $otpCode = $this->generateOtpCode();
@@ -204,7 +204,7 @@ class AuthController extends BaseController
             session()->setFlashdata('success', 'OTP baru sudah dikirim ke WhatsApp Anda.');
         }
 
-        return redirect()->to('/verify-otp');
+        return redirect()->to('verify-otp');
     }
 
     public function login()
@@ -237,7 +237,7 @@ class AuthController extends BaseController
 
             if ((int) ($user['is_wa_verified'] ?? 0) !== 1) {
                 session()->set('otp_user_id', (int) $user['id']);
-                return redirect()->to('/verify-otp')->with('warning', 'Akun Anda belum verifikasi WhatsApp. Masukkan OTP terlebih dahulu.');
+                return redirect()->to('verify-otp')->with('warning', 'Akun Anda belum verifikasi WhatsApp. Masukkan OTP terlebih dahulu.');
             }
 
             session()->regenerate();
@@ -248,7 +248,7 @@ class AuthController extends BaseController
                 'is_logged_in'    => true,
             ]);
 
-            return redirect()->to('/dashboard');
+            return redirect()->to('dashboard');
         }
 
         return view('auth/login', ['title' => 'Login']);
@@ -258,7 +258,7 @@ class AuthController extends BaseController
     {
         session()->destroy();
 
-        return redirect()->to('/login');
+        return redirect()->to('login');
     }
 
     private function normalizeWaNumber(string $waNumber): string

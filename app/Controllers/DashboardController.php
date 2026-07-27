@@ -78,7 +78,7 @@ class DashboardController extends BaseController
 
         $domain = $this->findOwnedDomain($id);
         if (! $domain) {
-            return redirect()->to('/dashboard')->with('error', 'Domain tidak ditemukan.');
+            return redirect()->to('dashboard')->with('error', 'Domain tidak ditemukan.');
         }
 
         $contacts = (new DomainContactModel())
@@ -152,7 +152,7 @@ class DashboardController extends BaseController
         }
 
         if (! $this->request->is('post')) {
-            return redirect()->to('/dashboard');
+            return redirect()->to('dashboard');
         }
 
         $rules = [
@@ -165,14 +165,14 @@ class DashboardController extends BaseController
         ];
 
         if (! $this->validate($rules)) {
-            return redirect()->to('/dashboard')->with('error', implode("\n", $this->validator->getErrors()));
+            return redirect()->to('dashboard')->with('error', implode("\n", $this->validator->getErrors()));
         }
 
         $userId    = (int) session()->get('auth_user_id');
         $domainUrl = $this->normalizeDomainUrl((string) $this->request->getPost('domain_url'));
 
         if ($domainUrl === '') {
-            return redirect()->to('/dashboard')->with('error', 'URL domain tidak valid.');
+            return redirect()->to('dashboard')->with('error', 'URL domain tidak valid.');
         }
 
         $domainModel = new DomainModel();
@@ -182,7 +182,7 @@ class DashboardController extends BaseController
             ->first();
 
         if ($exists) {
-            return redirect()->to('/dashboard')->with('error', 'Domain sudah ada di daftar Anda.');
+            return redirect()->to('dashboard')->with('error', 'Domain sudah ada di daftar Anda.');
         }
 
         try {
@@ -194,10 +194,10 @@ class DashboardController extends BaseController
             ]);
         } catch (\Throwable $e) {
             log_message('error', 'Store domain failed: {message}', ['message' => $e->getMessage()]);
-            return redirect()->to('/dashboard')->with('error', 'Gagal menambah domain. Cek koneksi database.');
+            return redirect()->to('dashboard')->with('error', 'Gagal menambah domain. Cek koneksi database.');
         }
 
-        return redirect()->to('/dashboard')->with('success', 'Domain berhasil ditambahkan.');
+        return redirect()->to('dashboard')->with('success', 'Domain berhasil ditambahkan.');
     }
 
     public function updateDomain(int $id)
@@ -207,12 +207,12 @@ class DashboardController extends BaseController
         }
 
         if (! $this->request->is('post')) {
-            return redirect()->to('/dashboard');
+            return redirect()->to('dashboard');
         }
 
         $domain = $this->findOwnedDomain($id);
         if (! $domain) {
-            return redirect()->to('/dashboard')->with('error', 'Domain tidak ditemukan.');
+            return redirect()->to('dashboard')->with('error', 'Domain tidak ditemukan.');
         }
 
         $rules = [
@@ -225,14 +225,14 @@ class DashboardController extends BaseController
         ];
 
         if (! $this->validate($rules)) {
-            return redirect()->to('/dashboard')->with('error', implode("\n", $this->validator->getErrors()));
+            return redirect()->to('dashboard')->with('error', implode("\n", $this->validator->getErrors()));
         }
 
         $userId    = (int) session()->get('auth_user_id');
         $domainUrl = $this->normalizeDomainUrl((string) $this->request->getPost('domain_url'));
 
         if ($domainUrl === '') {
-            return redirect()->to('/dashboard')->with('error', 'URL domain tidak valid.');
+            return redirect()->to('dashboard')->with('error', 'URL domain tidak valid.');
         }
 
         $domainModel = new DomainModel();
@@ -243,7 +243,7 @@ class DashboardController extends BaseController
             ->first();
 
         if ($exists) {
-            return redirect()->to('/dashboard')->with('error', 'Domain sudah ada di daftar Anda.');
+            return redirect()->to('dashboard')->with('error', 'Domain sudah ada di daftar Anda.');
         }
 
         $domainModel->update($id, [
@@ -260,12 +260,12 @@ class DashboardController extends BaseController
         }
 
         if (! $this->request->is('post')) {
-            return redirect()->to('/dashboard');
+            return redirect()->to('dashboard');
         }
 
         $domain = $this->findOwnedDomain($id);
         if (! $domain) {
-            return redirect()->to('/dashboard')->with('error', 'Domain tidak ditemukan.');
+            return redirect()->to('dashboard')->with('error', 'Domain tidak ditemukan.');
         }
 
         $next = (int) $domain['is_active'] === 1 ? 0 : 1;
@@ -273,7 +273,7 @@ class DashboardController extends BaseController
 
         $message = $next === 1 ? 'Monitoring domain diaktifkan.' : 'Monitoring domain dinonaktifkan.';
 
-        return redirect()->to('/dashboard')->with('success', $message);
+        return redirect()->to('dashboard')->with('success', $message);
     }
 
     public function checkDomain(int $id)
@@ -283,12 +283,12 @@ class DashboardController extends BaseController
         }
 
         if (! $this->request->is('post')) {
-            return redirect()->to('/dashboard');
+            return redirect()->to('dashboard');
         }
 
         $domain = $this->findOwnedDomain($id);
         if (! $domain) {
-            return redirect()->to('/dashboard')->with('error', 'Domain tidak ditemukan.');
+            return redirect()->to('dashboard')->with('error', 'Domain tidak ditemukan.');
         }
 
         if ((int) $domain['is_active'] !== 1) {
@@ -325,7 +325,7 @@ class DashboardController extends BaseController
         }
 
         if (! $this->request->is('post')) {
-            return redirect()->to('/dashboard');
+            return redirect()->to('dashboard');
         }
 
         $userId = (int) session()->get('auth_user_id');
@@ -359,14 +359,14 @@ class DashboardController extends BaseController
 
             $service->pruneOldHistory(7);
 
-            return redirect()->to('/dashboard')->with(
+            return redirect()->to('dashboard')->with(
                 'success',
                 "Pengecekan selesai: {$checked} domain (UP {$up}, DOWN {$down})."
             );
         } catch (\Throwable $e) {
             log_message('error', 'Manual check-all failed: {message}', ['message' => $e->getMessage()]);
 
-            return redirect()->to('/dashboard')->with('error', 'Pengecekan gagal: ' . $e->getMessage());
+            return redirect()->to('dashboard')->with('error', 'Pengecekan gagal: ' . $e->getMessage());
         }
     }
 
@@ -377,17 +377,17 @@ class DashboardController extends BaseController
         }
 
         if (! $this->request->is('post')) {
-            return redirect()->to('/dashboard');
+            return redirect()->to('dashboard');
         }
 
         $domain = $this->findOwnedDomain($id);
         if (! $domain) {
-            return redirect()->to('/dashboard')->with('error', 'Domain tidak ditemukan.');
+            return redirect()->to('dashboard')->with('error', 'Domain tidak ditemukan.');
         }
 
         (new DomainModel())->delete($id);
 
-        return redirect()->to('/dashboard')->with('success', 'Domain berhasil dihapus.');
+        return redirect()->to('dashboard')->with('success', 'Domain berhasil dihapus.');
     }
 
     public function storeContact(int $domainId)
@@ -397,12 +397,12 @@ class DashboardController extends BaseController
         }
 
         if (! $this->request->is('post')) {
-            return redirect()->to('/dashboard');
+            return redirect()->to('dashboard');
         }
 
         $domain = $this->findOwnedDomain($domainId);
         if (! $domain) {
-            return redirect()->to('/dashboard')->with('error', 'Domain tidak ditemukan.');
+            return redirect()->to('dashboard')->with('error', 'Domain tidak ditemukan.');
         }
 
         $rules = [
@@ -446,12 +446,12 @@ class DashboardController extends BaseController
         }
 
         if (! $this->request->is('post')) {
-            return redirect()->to('/dashboard');
+            return redirect()->to('dashboard');
         }
 
         $contact = $this->findOwnedContact($id);
         if (! $contact) {
-            return redirect()->to('/dashboard')->with('error', 'Kontak WhatsApp tidak ditemukan.');
+            return redirect()->to('dashboard')->with('error', 'Kontak WhatsApp tidak ditemukan.');
         }
 
         $domainId = (int) $contact['domain_id'];
@@ -497,12 +497,12 @@ class DashboardController extends BaseController
         }
 
         if (! $this->request->is('post')) {
-            return redirect()->to('/dashboard');
+            return redirect()->to('dashboard');
         }
 
         $contact = $this->findOwnedContact($id);
         if (! $contact) {
-            return redirect()->to('/dashboard')->with('error', 'Kontak WhatsApp tidak ditemukan.');
+            return redirect()->to('dashboard')->with('error', 'Kontak WhatsApp tidak ditemukan.');
         }
 
         $domainId = (int) $contact['domain_id'];
@@ -514,7 +514,7 @@ class DashboardController extends BaseController
     private function requireLogin()
     {
         if (! session()->get('is_logged_in')) {
-            return redirect()->to('/login');
+            return redirect()->to('login');
         }
 
         return null;

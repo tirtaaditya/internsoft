@@ -5,7 +5,7 @@
     <div class="page-loader" id="pageLoader" aria-live="polite" aria-label="Memuat halaman">
         <div>
             <div class="page-loader-core" aria-hidden="true">
-                <img src="/assets/img/logo-internsoft.png" alt="Internsoft" class="page-loader-logo">
+                <img src="<?= base_url('assets/img/logo-internsoft.png') ?>" alt="Internsoft" class="page-loader-logo">
                 <span class="page-loader-ring"></span>
             </div>
             <p class="page-loader-text">Loading ...</p>
@@ -27,7 +27,7 @@
                 <header class="top-nav">
                     <div class="nav-inner">
                         <a href="#beranda" class="logo-area">
-                            <img src="/assets/img/logo-internsoft.png" alt="Internsoft Technology Solutions" class="logo-img">
+                            <img src="<?= base_url('assets/img/logo-internsoft.png') ?>" alt="Internsoft Technology Solutions" class="logo-img">
                             <span class="logo-text">Internsoft</span>
                         </a>
 
@@ -36,11 +36,11 @@
                             <a href="#layanan">Layanan</a>
                             <a href="#tentang">Tentang Kami</a>
                             <a href="#kontak">Kontak</a>
-                            <a href="/login" class="btn btn-primary menu-login-mobile">Masuk</a>
+                            <a href="<?= base_url('login') ?>" class="btn btn-primary menu-login-mobile">Masuk</a>
                         </nav>
 
                         <div class="nav-end">
-                            <a href="/login" class="btn btn-primary nav-login-desktop">Masuk</a>
+                            <a href="<?= base_url('login') ?>" class="btn btn-primary nav-login-desktop">Masuk</a>
                             <button
                                 type="button"
                                 class="nav-toggle"
@@ -102,16 +102,16 @@
                 <div class="service-grid-v2" data-reveal-group>
                     <article class="service-card-v2" data-reveal>
                         <div class="service-image">
-                            <img src="/assets/img/tentang-kami-monitoring-server.png" alt="Monitoring Server">
+                            <img src="<?= base_url('assets/img/tentang-kami-monitoring-server.png') ?>" alt="Monitoring Server">
                         </div>
                         <h3>Monitoring Server</h3>
                         <p>Pantau server secara real-time dan dapatkan notifikasi langsung saat terjadi masalah.</p>
-                        <a href="/register">Selengkapnya</a>
+                        <a href="<?= base_url('register') ?>">Selengkapnya</a>
                     </article>
 
                     <article class="service-card-v2" data-reveal>
                         <div class="service-image whatsapp">
-                            <img src="/assets/img/tentang-kami-api-whatsapp.png" alt="API WhatsApp">
+                            <img src="<?= base_url('assets/img/tentang-kami-api-whatsapp.png') ?>" alt="API WhatsApp">
                         </div>
                         <h3>API WhatsApp</h3>
                         <p>Integrasi kirim WhatsApp ke aplikasi atau sistem Anda dengan mudah dan fleksibel.</p>
@@ -120,7 +120,7 @@
 
                     <article class="service-card-v2" data-reveal>
                         <div class="service-image">
-                            <img src="/assets/img/tentang-kami-pembuatan-website.png" alt="Pembuatan Aplikasi">
+                            <img src="<?= base_url('assets/img/tentang-kami-pembuatan-website.png') ?>" alt="Pembuatan Aplikasi">
                         </div>
                         <h3>Pembuatan Aplikasi</h3>
                         <p>Kami membangun aplikasi website dan mobile yang modern, responsif, dan sesuai kebutuhan.</p>
@@ -129,7 +129,7 @@
 
                     <article class="service-card-v2" data-reveal>
                         <div class="service-image">
-                            <img src="/assets/img/tentang-kami-instalasi-komputer.png" alt="Instalasi Komputer">
+                            <img src="<?= base_url('assets/img/tentang-kami-instalasi-komputer.png') ?>" alt="Instalasi Komputer">
                         </div>
                         <h3>Instalasi Komputer</h3>
                         <p>Layanan instalasi sistem operasi, software, dan konfigurasi komputer untuk kebutuhan Anda.</p>
@@ -178,7 +178,7 @@
         <div class="container footer-v2-grid" data-reveal-group>
             <div class="footer-brand" data-reveal>
                 <a href="#beranda" class="footer-logo">
-                    <img src="/assets/img/logo-internsoft.png" alt="Internsoft" class="footer-logo-img">
+                    <img src="<?= base_url('assets/img/logo-internsoft.png') ?>" alt="Internsoft" class="footer-logo-img">
                     <span>Internsoft</span>
                 </a>
                 <p>Memberikan solusi teknologi yang inovatif, andal, dan terintegrasi untuk masa depan yang lebih baik.</p>

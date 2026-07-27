@@ -4,14 +4,14 @@
 <div class="dash-shell">
     <header class="dash-top">
         <div class="dash-brand">
-            <a href="/" class="auth-brand">
-                <img src="/assets/img/logo-internsoft.png" alt="Internsoft" class="auth-brand-logo">
+            <a href="<?= base_url('/') ?>" class="auth-brand">
+                <img src="<?= base_url('assets/img/logo-internsoft.png') ?>" alt="Internsoft" class="auth-brand-logo">
                 <span>Internsoft</span>
             </a>
             <p class="dash-welcome">Halo, <?= esc($name) ?></p>
         </div>
 
-        <form method="post" action="/logout">
+        <form method="post" action="<?= base_url('logout') ?>">
             <?= csrf_field() ?>
             <button type="submit" class="btn btn-outline">Logout</button>
         </form>
@@ -50,13 +50,13 @@
                 <h1>Daftar Domain</h1>
                 <p>Klik domain untuk melihat riwayat UP/DOWN dan mengatur nomor WhatsApp.</p>
             </div>
-            <form method="post" action="/dashboard/check-all">
+            <form method="post" action="<?= base_url('dashboard/check-all') ?>">
                 <?= csrf_field() ?>
                 <button type="submit" class="btn btn-outline">Cek Semua Sekarang</button>
             </form>
         </div>
 
-        <form method="post" action="/dashboard/domains" class="dash-form dash-form-inline">
+        <form method="post" action="<?= base_url('dashboard/domains') ?>" class="dash-form dash-form-inline">
             <?= csrf_field() ?>
             <div class="field grow">
                 <label for="domain_url">URL Domain</label>
@@ -96,7 +96,7 @@
                         };
                     ?>
                     <li class="domain-row">
-                        <a class="domain-row-main" href="/dashboard/domains/<?= $domainId ?>" data-label="Domain">
+                        <a class="domain-row-main" href="<?= base_url('dashboard/domains/' . $domainId) ?>" data-label="Domain">
                             <strong><?= esc($domain['domain_url']) ?></strong>
                             <span class="domain-row-hint">Lihat riwayat UP/DOWN</span>
                         </a>
@@ -116,14 +116,14 @@
                         </span>
 
                         <div class="domain-row-actions" data-label="Aksi">
-                            <a class="btn btn-outline btn-sm" href="/dashboard/domains/<?= $domainId ?>">Detail</a>
-                            <form method="post" action="/dashboard/domains/<?= $domainId ?>/toggle">
+                            <a class="btn btn-outline btn-sm" href="<?= base_url('dashboard/domains/' . $domainId) ?>">Detail</a>
+                            <form method="post" action="<?= base_url('dashboard/domains/' . $domainId . '/toggle') ?>">
                                 <?= csrf_field() ?>
                                 <button type="submit" class="btn btn-outline btn-sm">
                                     <?= $active ? 'Jeda' : 'Aktifkan' ?>
                                 </button>
                             </form>
-                            <form method="post" action="/dashboard/domains/<?= $domainId ?>/delete" onsubmit="return confirm('Hapus domain ini beserta nomor WhatsApp-nya?');">
+                            <form method="post" action="<?= base_url('dashboard/domains/' . $domainId . '/delete') ?>" onsubmit="return confirm('Hapus domain ini beserta nomor WhatsApp-nya?');">
                                 <?= csrf_field() ?>
                                 <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                             </form>

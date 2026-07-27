@@ -10,8 +10,8 @@
 
     <div class="auth-shell">
         <aside class="auth-aside">
-            <a href="/" class="auth-brand">
-                <img src="/assets/img/logo-internsoft.png" alt="Internsoft" class="auth-brand-logo">
+            <a href="<?= base_url('/') ?>" class="auth-brand">
+                <img src="<?= base_url('assets/img/logo-internsoft.png') ?>" alt="Internsoft" class="auth-brand-logo">
                 <span>Internsoft</span>
             </a>
 
@@ -50,7 +50,7 @@
                 <div class="alert error"><?= esc($error) ?></div>
             <?php endif; ?>
 
-            <form method="post" action="/login" class="auth-form">
+            <form method="post" action="<?= base_url('login') ?>" class="auth-form">
                 <?= csrf_field() ?>
 
                 <div class="field">
@@ -66,8 +66,8 @@
                 <button type="submit" class="btn btn-primary btn-block">Masuk</button>
             </form>
 
-            <p class="auth-note">Belum punya akun? <a href="/register">Daftar di sini</a></p>
-            <a href="/" class="auth-back">Kembali ke beranda</a>
+            <p class="auth-note">Belum punya akun? <a href="<?= base_url('register') ?>">Daftar di sini</a></p>
+            <a href="<?= base_url('/') ?>" class="auth-back">Kembali ke beranda</a>
         </section>
     </div>
 </main>

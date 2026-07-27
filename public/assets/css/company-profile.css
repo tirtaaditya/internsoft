@@ -183,7 +183,7 @@ body.page-loading {
     content: "";
     position: absolute;
     inset: 0;
-    background-image: url("/assets/img/header-background.png");
+    background-image: url("../img/header-background.png");
     background-size: auto 128%;
     background-position: right -240px center;
     background-repeat: no-repeat;

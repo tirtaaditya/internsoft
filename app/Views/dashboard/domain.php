@@ -27,11 +27,11 @@
 <div class="dash-shell">
     <header class="dash-top">
         <div class="dash-brand">
-            <a href="/dashboard" class="auth-back-inline">← Kembali ke daftar</a>
+            <a href="<?= base_url('dashboard') ?>" class="auth-back-inline">← Kembali ke daftar</a>
             <p class="dash-welcome">Halo, <?= esc($name) ?></p>
         </div>
 
-        <form method="post" action="/logout">
+        <form method="post" action="<?= base_url('logout') ?>">
             <?= csrf_field() ?>
             <button type="submit" class="btn btn-outline">Logout</button>
         </form>
@@ -74,17 +74,17 @@
         </div>
 
         <div class="domain-actions">
-            <form method="post" action="/dashboard/domains/<?= $domainId ?>/check">
+            <form method="post" action="<?= base_url('dashboard/domains/' . $domainId . '/check') ?>">
                 <?= csrf_field() ?>
                 <button type="submit" class="btn btn-primary btn-sm">Cek Sekarang</button>
             </form>
-            <form method="post" action="/dashboard/domains/<?= $domainId ?>/toggle">
+            <form method="post" action="<?= base_url('dashboard/domains/' . $domainId . '/toggle') ?>">
                 <?= csrf_field() ?>
                 <button type="submit" class="btn btn-outline btn-sm">
                     <?= $active ? 'Jeda Monitoring' : 'Aktifkan Monitoring' ?>
                 </button>
             </form>
-            <form method="post" action="/dashboard/domains/<?= $domainId ?>/delete" onsubmit="return confirm('Hapus domain ini beserta nomor WhatsApp-nya?');">
+            <form method="post" action="<?= base_url('dashboard/domains/' . $domainId . '/delete') ?>" onsubmit="return confirm('Hapus domain ini beserta nomor WhatsApp-nya?');">
                 <?= csrf_field() ?>
                 <button type="submit" class="btn btn-danger btn-sm">Hapus Domain</button>
             </form>
@@ -176,7 +176,7 @@
                                     class="btn btn-outline btn-sm js-open-edit-wa"
                                     data-modal="edit-wa-<?= $contactId ?>"
                                 >Edit</button>
-                                <form method="post" action="/dashboard/contacts/<?= $contactId ?>/delete" onsubmit="return confirm('Hapus nomor ini?');">
+                                <form method="post" action="<?= base_url('dashboard/contacts/' . $contactId . '/delete') ?>" onsubmit="return confirm('Hapus nomor ini?');">
                                     <?= csrf_field() ?>
                                     <button type="submit" class="contact-delete" title="Hapus nomor" aria-label="Hapus nomor">×</button>
                                 </form>
@@ -189,7 +189,7 @@
                                         <h3 id="edit-wa-title-<?= $contactId ?>">Edit nomor WhatsApp</h3>
                                         <button type="button" class="wa-modal-close js-close-edit-wa" data-modal="edit-wa-<?= $contactId ?>" aria-label="Tutup">×</button>
                                     </div>
-                                    <form method="post" action="/dashboard/contacts/<?= $contactId ?>/update" class="wa-modal-form">
+                                    <form method="post" action="<?= base_url('dashboard/contacts/' . $contactId . '/update') ?>" class="wa-modal-form">
                                         <?= csrf_field() ?>
                                         <label for="edit_phone_<?= $contactId ?>">Nomor WhatsApp</label>
                                         <div class="input-prefix">
@@ -216,7 +216,7 @@
                 </ul>
             <?php endif; ?>
 
-            <form method="post" action="/dashboard/domains/<?= $domainId ?>/contacts" class="dash-form contact-add">
+            <form method="post" action="<?= base_url('dashboard/domains/' . $domainId . '/contacts') ?>" class="dash-form contact-add">
                 <?= csrf_field() ?>
                 <div class="field">
                     <label for="phone_<?= $domainId ?>">Tambah nomor</label>
@@ -230,7 +230,7 @@
 
             <details class="domain-settings">
                 <summary>Edit URL domain</summary>
-                <form method="post" action="/dashboard/domains/<?= $domainId ?>/update" class="dash-form">
+                <form method="post" action="<?= base_url('dashboard/domains/' . $domainId . '/update') ?>" class="dash-form">
                     <?= csrf_field() ?>
                     <div class="field">
                         <label for="domain_url_<?= $domainId ?>">URL Domain</label>

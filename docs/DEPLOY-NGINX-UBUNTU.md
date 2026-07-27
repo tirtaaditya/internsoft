@@ -4,11 +4,10 @@ Panduan install aplikasi Internsoft (CodeIgniter 4) di Ubuntu + Nginx.
 
 Dua tahap:
 
-1. **Sementara** lewat IP + prefix: `http://10.30.20.32/internsoft`
+1. **Sementara** lewat IP + prefix: `http://198.167.141.15/internsoft`
 2. **Produksi** lewat domain tanpa prefix: `https://internsoft.my.id`
 
-> Ganti `10.30.20.32` dengan IP server Anda.  
-> (Catatan: `10.30.20.322` tidak valid sebagai IP — tiap oktet maksimal 255.)
+> Ganti IP jika berbeda. Contoh di server ini: `198.167.141.15`.
 
 ---
 
@@ -96,94 +95,161 @@ mysql -u app_internsoft -p db_internsoft < /var/www/internsoft/database/db_inter
 
 ---
 
-## 4. Tahap 1 — Nginx dengan prefix `/internsoft`
+## 4. Tahap 1 — Tambah Internsoft ke Nginx yang sudah ada
 
-Buat config:
+Di server ini sudah ada aplikasi di `/etc/nginx/sites-available/default`
+(`/Api/`, `/uploads/`, `/wa/`). **Jangan buat site baru yang merebut port 80.**
+Cukup tambah path `/internsoft` di file `default`.
+
+Contoh akses sementara:
+
+```text
+http://198.167.141.15/internsoft
+```
+
+### 4.1 Symlink public ke document root
+
+Karena `root` Nginx kamu sudah `/var/www/html`:
+
+```bash
+sudo ln -sfn /var/www/internsoft/public /var/www/html/internsoft
+ls -la /var/www/html/internsoft
+```
+
+### 4.2 Edit `.env`
+
+```ini
+CI_ENVIRONMENT = production
+app.baseURL = 'http://198.167.141.15/internsoft/'
+app.indexPage = ''
+```
+
+Trailing slash `/` di akhir `baseURL` wajib.  
+`app.indexPage = ''` penting supaya URL bersih (tanpa `index.php`) di balik Nginx rewrite.
+
+### 4.3 Tambah location di `default`
+
+```bash
+sudo nano /etc/nginx/sites-available/default
+```
+
+Tambahkan **di dalam** `server { ... }` yang sudah ada, **sebelum**
+`location / { return 444; }` supaya `/internsoft` tidak tertolak:
+
+```nginx
+    # ===== Internsoft (CI4) =====
+    location /internsoft {
+        try_files $uri $uri/ /internsoft/index.php?$query_string;
+    }
+
+    location ~ ^/internsoft/index\.php(/|$) {
+        include fastcgi_params;
+        fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_index index.php;
+        fastcgi_read_timeout 120;
+        fastcgi_buffers 16 16k;
+        fastcgi_intercept_errors on;
+    }
+
+    # Blokir PHP lain di folder internsoft (kecuali index.php di atas)
+    location ~ ^/internsoft/(.+\.php)$ {
+        deny all;
+    }
+    # ===== /Internsoft =====
+```
+
+Urutan lokasi yang aman di file `default` kira-kira:
+
+```text
+1. location ~ \.php$          (yang sudah ada — untuk /Api dll)
+2. location /internsoft       (baru)
+3. location ~ ^/internsoft/index\.php  (baru)
+4. location ~ ^/internsoft/(.+\.php)$  (baru)
+5. location /                 (return 444 — biarkan)
+6. location /Api/ ...
+7. location /wa/ ...
+```
+
+> Catatan: di Nginx, regex `location ~ \.php$` bisa menangkap
+> `/internsoft/index.php` lebih dulu. Kalau PHP Internsoft aneh/404,
+> pindahkan blok `location ~ ^/internsoft/index\.php` **di atas**
+> `location ~ \.php$`, atau ubah jadi `location ^~ /internsoft/`
+> untuk static + rewrite terpisah.
+
+Varian lebih aman (prefix menang sebelum regex PHP global):
+
+```nginx
+    # Letakkan SEBELUM "location ~ \.php$"
+    location ^~ /internsoft/ {
+        try_files $uri $uri/ /internsoft/index.php?$query_string;
+
+        location ~ \.php(?:$|/) {
+            include fastcgi_params;
+            fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            fastcgi_index index.php;
+            fastcgi_read_timeout 120;
+            fastcgi_buffers 16 16k;
+            fastcgi_intercept_errors on;
+        }
+    }
+
+    location = /internsoft {
+        return 301 /internsoft/;
+    }
+```
+
+### 4.4 Reload (tanpa hapus default)
+
+```bash
+# Pastikan site internsoft terpisah TIDAK aktif
+sudo rm -f /etc/nginx/sites-enabled/internsoft
+
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+Cek:
+
+```text
+http://198.167.141.15/Api/          → aplikasi lama
+http://198.167.141.15/wa/           → aplikasi lama
+http://198.167.141.15/internsoft/   → Internsoft
+http://198.167.141.15/internsoft/login
+```
+
+Host sudah diizinkan di config kamu (`198.167.141.15`), jadi akses via IP aman.
+
+### 4.5 Kalau sempat merusak aplikasi lama
+
+```bash
+sudo ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+sudo rm -f /etc/nginx/sites-enabled/internsoft
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+---
+
+## 4b. (Opsional) Site terpisah — hanya jika server masih kosong
+
+Jangan pakai bagian ini di server yang sudah punya `/Api` dan `/wa`.
+Simpan sebagai referensi saja.
 
 ```bash
 sudo nano /etc/nginx/sites-available/internsoft
 ```
 
-Isi:
-
 ```nginx
 server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    server_name 10.30.20.32;
+    listen 80;
+    listen [::]:80;
+    server_name 198.167.141.15;
+    # JANGAN pakai default_server
 
     client_max_body_size 20M;
-
-    # Aplikasi di http://10.30.20.32/internsoft
-    location /internsoft {
-        alias /var/www/internsoft/public;
-        index index.php index.html;
-
-        try_files $uri $uri/ @internsoft_ci;
-
-        location ~ ^/internsoft/(.+\.php)$ {
-            include fastcgi_params;
-            fastcgi_param SCRIPT_FILENAME /var/www/internsoft/public/$1;
-            fastcgi_pass unix:/run/php/php8.3-fpm.sock;
-            fastcgi_index index.php;
-            fastcgi_read_timeout 120;
-        }
-
-        location ~* ^/internsoft/(.+\.(js|css|png|jpg|jpeg|gif|ico|svg|woff2?))$ {
-            alias /var/www/internsoft/public/$1;
-            expires 7d;
-            access_log off;
-        }
-    }
-
-    location @internsoft_ci {
-        include fastcgi_params;
-        fastcgi_param SCRIPT_FILENAME /var/www/internsoft/public/index.php;
-        fastcgi_param REQUEST_URI $uri;
-        # CI4 butuh path relatif terhadap baseURL /internsoft/
-        fastcgi_param SCRIPT_NAME /internsoft/index.php;
-        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
-    }
-}
-```
-
-> Kalau rewrite path bermasalah di subdirectory, alternatif paling stabil: lihat bagian **Tips alias** di bawah.
-
-Aktifkan site:
-
-```bash
-sudo rm -f /etc/nginx/sites-enabled/default
-sudo ln -sf /etc/nginx/sites-available/internsoft /etc/nginx/sites-enabled/internsoft
-sudo nginx -t
-sudo systemctl reload nginx
-sudo systemctl reload php8.3-fpm
-```
-
-Cek di browser:
-
-```text
-http://10.30.20.32/internsoft
-http://10.30.20.32/internsoft/login
-```
-
-### Tips alias (kalau 404 / asset pecah)
-
-Subdirectory + `alias` di Nginx sering ribet. Cara paling aman:
-
-```bash
-sudo mkdir -p /var/www/html
-sudo ln -sfn /var/www/internsoft/public /var/www/html/internsoft
-```
-
-Lalu config lebih sederhana:
-
-```nginx
-server {
-    listen 80 default_server;
-    server_name 10.30.20.32;
     root /var/www/html;
-    index index.php index.html;
-    client_max_body_size 20M;
 
     location /internsoft {
         try_files $uri $uri/ /internsoft/index.php?$query_string;
@@ -191,24 +257,45 @@ server {
 
     location ~ ^/internsoft/index\.php(/|$) {
         include snippets/fastcgi-php.conf;
-        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+        fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
         fastcgi_read_timeout 120;
     }
-
-    location ~ ^/internsoft/(.+\.php)$ {
-        deny all;
-    }
 }
+```
+
+---
+
+### Tips symlink (wajib untuk cara di atas)
+
+```bash
+sudo ln -sfn /var/www/internsoft/public /var/www/html/internsoft
 ```
 
 Pastikan `.env`:
 
 ```ini
-app.baseURL = 'http://10.30.20.32/internsoft/'
+app.baseURL = 'http://198.167.141.15/internsoft/'
+app.indexPage = ''
 ```
 
 Trailing slash `/` di akhir `baseURL` wajib.
+
+### CSS/JS tidak muncul di `/internsoft`
+
+Biasanya karena:
+
+1. `app.baseURL` belum pakai prefix `/internsoft/`
+2. Kode masih hardcode `/assets/...` (sudah diganti ke `base_url()`)
+3. Symlink belum ada: `ls -la /var/www/html/internsoft/assets`
+
+Tes langsung:
+
+```text
+http://198.167.141.15/internsoft/assets/css/company-profile.css
+```
+
+Kalau 404 → masalah Nginx/symlink. Kalau 200 tapi halaman masih polos → hard refresh (`Ctrl+Shift+R`) atau `baseURL` salah.
 
 ---
 
