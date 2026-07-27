@@ -22,19 +22,38 @@
                     <span class="hero-grid"></span>
                 </div>
 
+                <div class="nav-backdrop" id="navBackdrop" hidden></div>
+
                 <header class="top-nav">
                     <div class="nav-inner">
                         <a href="#beranda" class="logo-area">
                             <img src="/assets/img/logo-internsoft.png" alt="Internsoft Technology Solutions" class="logo-img">
                             <span class="logo-text">Internsoft</span>
                         </a>
-                        <nav class="menu-links">
+
+                        <nav class="menu-links" id="mainMenu">
                             <a href="#beranda" class="is-active">Beranda</a>
                             <a href="#layanan">Layanan</a>
                             <a href="#tentang">Tentang Kami</a>
                             <a href="#kontak">Kontak</a>
+                            <a href="/login" class="btn btn-primary menu-login-mobile">Masuk</a>
                         </nav>
-                        <a href="/login" class="btn btn-primary">Masuk</a>
+
+                        <div class="nav-end">
+                            <a href="/login" class="btn btn-primary nav-login-desktop">Masuk</a>
+                            <button
+                                type="button"
+                                class="nav-toggle"
+                                id="navToggle"
+                                aria-label="Buka menu"
+                                aria-expanded="false"
+                                aria-controls="mainMenu"
+                            >
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </button>
+                        </div>
                     </div>
                 </header>
 
@@ -281,6 +300,58 @@
 
         sections.forEach(function(item) {
             observer.observe(item.target);
+        });
+    })();
+
+    (function() {
+        var toggle = document.getElementById('navToggle');
+        var menu = document.getElementById('mainMenu');
+        var backdrop = document.getElementById('navBackdrop');
+        if (!toggle || !menu) return;
+
+        function setOpen(open) {
+            document.body.classList.toggle('nav-open', open);
+            toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            toggle.setAttribute('aria-label', open ? 'Tutup menu' : 'Buka menu');
+            if (backdrop) {
+                if (open) {
+                    backdrop.hidden = false;
+                } else {
+                    backdrop.hidden = true;
+                }
+            }
+        }
+
+        toggle.addEventListener('click', function(event) {
+            event.stopPropagation();
+            setOpen(!document.body.classList.contains('nav-open'));
+        });
+
+        menu.querySelectorAll('a').forEach(function(link) {
+            link.addEventListener('click', function() {
+                setOpen(false);
+            });
+        });
+
+        if (backdrop) {
+            backdrop.addEventListener('click', function() {
+                setOpen(false);
+            });
+        }
+
+        document.addEventListener('click', function(event) {
+            if (!document.body.classList.contains('nav-open')) return;
+            if (menu.contains(event.target) || toggle.contains(event.target)) return;
+            if (backdrop && backdrop.contains(event.target)) return;
+            setOpen(false);
+        });
+
+        window.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') setOpen(false);
+        });
+
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 900) setOpen(false);
         });
     })();
 </script>

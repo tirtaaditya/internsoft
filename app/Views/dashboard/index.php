@@ -96,26 +96,26 @@
                         };
                     ?>
                     <li class="domain-row">
-                        <a class="domain-row-main" href="/dashboard/domains/<?= $domainId ?>">
+                        <a class="domain-row-main" href="/dashboard/domains/<?= $domainId ?>" data-label="Domain">
                             <strong><?= esc($domain['domain_url']) ?></strong>
                             <span class="domain-row-hint">Lihat riwayat UP/DOWN</span>
                         </a>
 
-                        <span class="badge status-<?= esc(strtolower($status), 'attr') ?>">
+                        <span class="badge status-<?= esc(strtolower($status), 'attr') ?>" data-label="Kondisi situs">
                             <span class="badge-dot"></span><?= esc($statusLabel) ?>
                         </span>
 
-                        <span class="badge <?= $active ? 'badge-on' : 'badge-off' ?>">
+                        <span class="badge <?= $active ? 'badge-on' : 'badge-off' ?>" data-label="Pengecekan">
                             <?= $active ? 'Berjalan' : 'Dijeda' ?>
                         </span>
 
-                        <span class="domain-wa-count"><?= $waCount ?> nomor</span>
+                        <span class="domain-wa-count" data-label="WhatsApp"><?= $waCount ?> nomor</span>
 
-                        <span class="domain-checked">
+                        <span class="domain-checked" data-label="Terakhir dicek">
                             <?= ! empty($domain['last_checked_at']) ? esc($domain['last_checked_at']) : 'Belum pernah' ?>
                         </span>
 
-                        <div class="domain-row-actions">
+                        <div class="domain-row-actions" data-label="Aksi">
                             <a class="btn btn-outline btn-sm" href="/dashboard/domains/<?= $domainId ?>">Detail</a>
                             <form method="post" action="/dashboard/domains/<?= $domainId ?>/toggle">
                                 <?= csrf_field() ?>
