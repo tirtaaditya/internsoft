@@ -622,9 +622,16 @@ class MonitorService
         );
 
         $sent = 0;
+        $index = 0;
 
         foreach ($contacts as $contact) {
+            // Jeda 1 detik antar pengiriman untuk menghindari rate limit WA gateway.
+            if ($index > 0) {
+                sleep(1);
+            }
+
             $result = $this->whatsapp->sendMessage((string) $contact['phone_number'], $message);
+
             if ($result['success']) {
                 $sent++;
             } else {
@@ -633,6 +640,8 @@ class MonitorService
                     'error' => $result['error'] ?? $result['response'] ?? 'unknown',
                 ]);
             }
+
+            $index++;
         }
 
         return $sent;

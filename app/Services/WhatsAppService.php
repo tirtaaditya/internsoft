@@ -14,10 +14,12 @@ class WhatsAppService
     public function sendMessage(string $to, string $message): array
     {
         try {
+            // getShared: false — pastikan instance baru setiap kali kirim
+            // supaya tidak ada state carryover dari request sebelumnya.
             $client = Services::curlrequest([
                 'timeout'    => 15,
                 'http_errors' => false,
-            ]);
+            ], null, null, false);
 
             $response = $client->post(self::API_URL, [
                 'json' => [
