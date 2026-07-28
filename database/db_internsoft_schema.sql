@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS domains (
   is_active TINYINT(1) NOT NULL DEFAULT 1,
   last_status ENUM('UP','DOWN','UNKNOWN') NOT NULL DEFAULT 'UNKNOWN',
   last_checked_at DATETIME NULL,
+  consecutive_failures TINYINT UNSIGNED NOT NULL DEFAULT 0,
   created_at DATETIME NULL,
   updated_at DATETIME NULL,
   PRIMARY KEY (id),

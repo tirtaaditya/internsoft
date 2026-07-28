@@ -141,9 +141,15 @@ class MonitorService
         // status berubah → insert baris baru (baris lama tidak dihapus).
         $this->recordCheck($domainId, $newStatus, $checkedAt, $probe);
 
+        // Hitung consecutive failures untuk menghindari false positive dari blip sesaat.
+        // DOWN notification hanya dikirim setelah 2x gagal berturut-turut.
+        $currentFailures = (int) ($domain['consecutive_failures'] ?? 0);
+        $newFailures     = $newStatus === 'DOWN' ? $currentFailures + 1 : 0;
+
         $this->domains->update($domainId, [
-            'last_status'     => $newStatus,
-            'last_checked_at' => $checkedAt,
+            'last_status'          => $newStatus,
+            'last_checked_at'      => $checkedAt,
+            'consecutive_failures' => $newFailures,
         ]);
 
         if ($statusTransition) {
@@ -152,12 +158,12 @@ class MonitorService
 
         $notified = 0;
 
-        // Hanya kirim WA saat status benar-benar berubah:
-        // UP/UNKNOWN -> DOWN = kirim
-        // DOWN -> UP = kirim
-        // UP -> UP / DOWN -> DOWN = jangan kirim
-        $shouldNotify = ($newStatus === 'DOWN' && $oldStatus !== 'DOWN')
-            || ($newStatus === 'UP' && $oldStatus === 'DOWN');
+        // Kirim DOWN hanya pada kegagalan ke-2 berturut-turut.
+        // Kirim UP hanya jika DOWN notification sudah pernah terkirim (currentFailures >= 2).
+        $downWasNotified = $currentFailures >= 2;
+
+        $shouldNotify = ($newStatus === 'DOWN' && $newFailures === 2)
+            || ($newStatus === 'UP' && $oldStatus === 'DOWN' && $downWasNotified);
 
         if ($shouldNotify) {
             $notified = $this->notifyContacts(

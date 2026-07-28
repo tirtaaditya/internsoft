@@ -17,6 +17,7 @@ class DomainModel extends Model
         'is_active',
         'last_status',
         'last_checked_at',
+        'consecutive_failures',
     ];
 
     protected bool $allowEmptyInserts = false;
