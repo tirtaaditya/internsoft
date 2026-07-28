@@ -137,8 +137,8 @@ class MonitorService
         $statusTransition = $oldStatus !== $newStatus;
         $domainId  = (int) $domain['id'];
 
-        // Riwayat UP/DOWN: DOWN selalu disimpan; UP hanya 1 terbaru per domain
-        // (UP berturut-turut → update baris terakhir; UP baru → hapus UP lama).
+        // Riwayat UP/DOWN: status sama berturut-turut → update baris terakhir;
+        // status berubah → insert baris baru (baris lama tidak dihapus).
         $this->recordCheck($domainId, $newStatus, $checkedAt, $probe);
 
         $this->domains->update($domainId, [
@@ -472,9 +472,10 @@ class MonitorService
 
     /**
      * Catat hasil pengecekan ke domain_checks:
-     * - DOWN: selalu insert (semua DOWN dipertahankan).
-     * - UP berturut-turut: update baris UP terakhir (checked_at + metrik), tanpa insert/delete.
-     * - UP setelah DOWN / pertama kali: insert UP baru (UP lama tidak dihapus).
+     * - Status sama berturut-turut (UP→UP / DOWN→DOWN): update baris terakhir
+     *   (checked_at + metrik), tanpa insert/delete.
+     * - Status berubah (UP→DOWN / DOWN→UP) atau belum ada riwayat: insert baris baru
+     *   (baris lama tidak dihapus).
      *
      * @param array{http_code:int|null, response_time_ms:int|null, error_message:string|null} $probe
      */
@@ -489,21 +490,14 @@ class MonitorService
             'error_message'    => $probe['error_message'],
         ];
 
-        if ($status === 'DOWN') {
-            $this->checks->insert($payload);
-
-            return;
-        }
-
-        // Status UP
         $latest = $this->checks
             ->where('domain_id', $domainId)
             ->orderBy('checked_at', 'DESC')
             ->orderBy('id', 'DESC')
             ->first();
 
-        if ($latest && ($latest['status'] ?? '') === 'UP') {
-            // UP → UP: perbarui timestamp/metrik pada baris UP terakhir saja.
+        if ($latest && ($latest['status'] ?? '') === $status) {
+            // UP → UP / DOWN → DOWN: perbarui timestamp/metrik pada baris terakhir saja.
             $this->checks->update((int) $latest['id'], [
                 'checked_at'       => $checkedAt,
                 'http_code'        => $probe['http_code'],
@@ -514,7 +508,7 @@ class MonitorService
             return;
         }
 
-        // DOWN → UP (atau belum ada riwayat): insert UP baru.
+        // Status berubah atau belum ada riwayat: insert baris baru.
         $this->checks->insert($payload);
     }
 
