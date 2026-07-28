@@ -135,17 +135,13 @@ class MonitorService
         $newStatus = $probe['status'];
         $oldStatus = (string) ($domain['last_status'] ?? 'UNKNOWN');
         $statusTransition = $oldStatus !== $newStatus;
+        $domainId  = (int) $domain['id'];
 
-        $this->checks->insert([
-            'domain_id'        => (int) $domain['id'],
-            'checked_at'       => $checkedAt,
-            'status'           => $newStatus,
-            'http_code'        => $probe['http_code'],
-            'response_time_ms' => $probe['response_time_ms'],
-            'error_message'    => $probe['error_message'],
-        ]);
+        // Riwayat UP/DOWN: DOWN selalu disimpan; UP hanya 1 terbaru per domain
+        // (UP berturut-turut → update baris terakhir; UP baru → hapus UP lama).
+        $this->recordCheck($domainId, $newStatus, $checkedAt, $probe);
 
-        $this->domains->update((int) $domain['id'], [
+        $this->domains->update($domainId, [
             'last_status'     => $newStatus,
             'last_checked_at' => $checkedAt,
         ]);
@@ -472,6 +468,86 @@ class MonitorService
         return str_contains($error, 'ssl certificate problem')
             || str_contains($error, 'unable to get local issuer certificate')
             || str_contains($error, 'certificate verify failed');
+    }
+
+    /**
+     * Catat hasil pengecekan ke domain_checks dengan aturan riwayat lean:
+     * - DOWN: selalu insert (semua DOWN dipertahankan).
+     * - UP berturut-turut: update baris UP terakhir (jangan tambah baris baru).
+     * - UP setelah DOWN / pertama kali: insert UP baru, hapus semua UP lama domain ini.
+     *
+     * @param array{http_code:int|null, response_time_ms:int|null, error_message:string|null} $probe
+     */
+    private function recordCheck(int $domainId, string $status, string $checkedAt, array $probe): void
+    {
+        $payload = [
+            'domain_id'        => $domainId,
+            'checked_at'       => $checkedAt,
+            'status'           => $status,
+            'http_code'        => $probe['http_code'],
+            'response_time_ms' => $probe['response_time_ms'],
+            'error_message'    => $probe['error_message'],
+        ];
+
+        if ($status === 'DOWN') {
+            $this->checks->insert($payload);
+
+            return;
+        }
+
+        // Status UP
+        $latest = $this->checks
+            ->where('domain_id', $domainId)
+            ->orderBy('checked_at', 'DESC')
+            ->orderBy('id', 'DESC')
+            ->first();
+
+        if ($latest && ($latest['status'] ?? '') === 'UP') {
+            // UP → UP: perbarui timestamp/metrik saja, biar riwayat tidak penuh.
+            $this->checks->update((int) $latest['id'], [
+                'checked_at'       => $checkedAt,
+                'http_code'        => $probe['http_code'],
+                'response_time_ms' => $probe['response_time_ms'],
+                'error_message'    => $probe['error_message'],
+            ]);
+            // Bersihkan UP lama yang mungkin tersisa dari sebelum aturan ini.
+            $this->pruneOlderUpChecks($domainId, (int) $latest['id']);
+
+            return;
+        }
+
+        // DOWN → UP (atau belum ada riwayat): insert UP baru, hapus UP lama.
+        $this->checks->insert($payload);
+        $this->pruneOlderUpChecks($domainId);
+    }
+
+    /**
+     * Hapus semua baris UP lama untuk domain, sisakan hanya UP terbaru.
+     * Baris DOWN tidak disentuh.
+     */
+    private function pruneOlderUpChecks(int $domainId, ?int $keepId = null): void
+    {
+        if ($keepId === null) {
+            $latestUp = $this->checks
+                ->where('domain_id', $domainId)
+                ->where('status', 'UP')
+                ->orderBy('checked_at', 'DESC')
+                ->orderBy('id', 'DESC')
+                ->first();
+
+            if (! $latestUp) {
+                return;
+            }
+
+            $keepId = (int) $latestUp['id'];
+        }
+
+        $db = db_connect();
+        $db->table('domain_checks')
+            ->where('domain_id', $domainId)
+            ->where('status', 'UP')
+            ->where('id !=', $keepId)
+            ->delete();
     }
 
     private function handleOutageTransition(int $domainId, string $oldStatus, string $newStatus, string $checkedAt): void
