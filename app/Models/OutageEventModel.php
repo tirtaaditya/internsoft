@@ -17,6 +17,7 @@ class OutageEventModel extends Model
         'ended_at',
         'duration_seconds',
         'is_acknowledged',
+        'down_notified',
     ];
 
     protected bool $allowEmptyInserts = false;

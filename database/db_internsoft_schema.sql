@@ -73,6 +73,7 @@ CREATE TABLE IF NOT EXISTS outage_events (
   ended_at DATETIME NULL,
   duration_seconds INT NULL,
   is_acknowledged TINYINT(1) NOT NULL DEFAULT 0,
+  down_notified TINYINT(1) NOT NULL DEFAULT 0,
   created_at DATETIME NULL,
   updated_at DATETIME NULL,
   PRIMARY KEY (id),

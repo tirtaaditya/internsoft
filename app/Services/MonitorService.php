@@ -141,29 +141,55 @@ class MonitorService
         // status berubah → insert baris baru (baris lama tidak dihapus).
         $this->recordCheck($domainId, $newStatus, $checkedAt, $probe);
 
-        // Hitung consecutive failures untuk menghindari false positive dari blip sesaat.
-        // DOWN notification hanya dikirim setelah 2x gagal berturut-turut.
-        $currentFailures = (int) ($domain['consecutive_failures'] ?? 0);
-        $newFailures     = $newStatus === 'DOWN' ? $currentFailures + 1 : 0;
-
         $this->domains->update($domainId, [
-            'last_status'          => $newStatus,
-            'last_checked_at'      => $checkedAt,
-            'consecutive_failures' => $newFailures,
+            'last_status'     => $newStatus,
+            'last_checked_at' => $checkedAt,
         ]);
 
         if ($statusTransition) {
             $this->handleOutageTransition((int) $domain['id'], $oldStatus, $newStatus, $checkedAt);
         }
 
-        $notified = 0;
+        $notified     = 0;
+        $shouldNotify = false;
 
-        // Kirim DOWN hanya pada kegagalan ke-2 berturut-turut.
-        // Kirim UP hanya jika DOWN notification sudah pernah terkirim (currentFailures >= 2).
-        $downWasNotified = $currentFailures >= 2;
+        // Threshold waktu minimum sebelum notifikasi DOWN dikirim.
+        // Domain yang DOWN < 60 detik dianggap blip sesaat, tidak dinotifikasi.
+        $minDownSeconds = 60;
 
-        $shouldNotify = ($newStatus === 'DOWN' && $newFailures === 2)
-            || ($newStatus === 'UP' && $oldStatus === 'DOWN' && $downWasNotified);
+        if ($newStatus === 'DOWN') {
+            // Cek outage yang masih terbuka — dibuat oleh handleOutageTransition di atas.
+            $open = $this->outages
+                ->where('domain_id', $domainId)
+                ->where('ended_at', null)
+                ->orderBy('started_at', 'DESC')
+                ->first();
+
+            if (
+                $open !== null
+                && (int) ($open['down_notified'] ?? 0) === 0
+            ) {
+                $startedTs = strtotime((string) ($open['started_at'] ?? '')) ?: time();
+                $nowTs     = strtotime($checkedAt) ?: time();
+
+                if (($nowTs - $startedTs) >= $minDownSeconds) {
+                    $shouldNotify = true;
+                    // Tandai agar tidak kirim notif DOWN lagi untuk outage yang sama.
+                    $this->outages->update((int) $open['id'], ['down_notified' => 1]);
+                }
+            }
+        } elseif ($newStatus === 'UP' && $oldStatus === 'DOWN') {
+            // Kirim UP hanya jika DOWN notification pernah dikirim untuk outage ini.
+            $closed = $this->outages
+                ->where('domain_id', $domainId)
+                ->where('ended_at !=', null)
+                ->orderBy('ended_at', 'DESC')
+                ->first();
+
+            if ($closed !== null && (int) ($closed['down_notified'] ?? 0) === 1) {
+                $shouldNotify = true;
+            }
+        }
 
         if ($shouldNotify) {
             $notified = $this->notifyContacts(
