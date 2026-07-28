@@ -471,10 +471,10 @@ class MonitorService
     }
 
     /**
-     * Catat hasil pengecekan ke domain_checks dengan aturan riwayat lean:
+     * Catat hasil pengecekan ke domain_checks:
      * - DOWN: selalu insert (semua DOWN dipertahankan).
-     * - UP berturut-turut: update baris UP terakhir (jangan tambah baris baru).
-     * - UP setelah DOWN / pertama kali: insert UP baru, hapus semua UP lama domain ini.
+     * - UP berturut-turut: update baris UP terakhir (checked_at + metrik), tanpa insert/delete.
+     * - UP setelah DOWN / pertama kali: insert UP baru (UP lama tidak dihapus).
      *
      * @param array{http_code:int|null, response_time_ms:int|null, error_message:string|null} $probe
      */
@@ -503,51 +503,19 @@ class MonitorService
             ->first();
 
         if ($latest && ($latest['status'] ?? '') === 'UP') {
-            // UP → UP: perbarui timestamp/metrik saja, biar riwayat tidak penuh.
+            // UP → UP: perbarui timestamp/metrik pada baris UP terakhir saja.
             $this->checks->update((int) $latest['id'], [
                 'checked_at'       => $checkedAt,
                 'http_code'        => $probe['http_code'],
                 'response_time_ms' => $probe['response_time_ms'],
                 'error_message'    => $probe['error_message'],
             ]);
-            // Bersihkan UP lama yang mungkin tersisa dari sebelum aturan ini.
-            $this->pruneOlderUpChecks($domainId, (int) $latest['id']);
 
             return;
         }
 
-        // DOWN → UP (atau belum ada riwayat): insert UP baru, hapus UP lama.
+        // DOWN → UP (atau belum ada riwayat): insert UP baru.
         $this->checks->insert($payload);
-        $this->pruneOlderUpChecks($domainId);
-    }
-
-    /**
-     * Hapus semua baris UP lama untuk domain, sisakan hanya UP terbaru.
-     * Baris DOWN tidak disentuh.
-     */
-    private function pruneOlderUpChecks(int $domainId, ?int $keepId = null): void
-    {
-        if ($keepId === null) {
-            $latestUp = $this->checks
-                ->where('domain_id', $domainId)
-                ->where('status', 'UP')
-                ->orderBy('checked_at', 'DESC')
-                ->orderBy('id', 'DESC')
-                ->first();
-
-            if (! $latestUp) {
-                return;
-            }
-
-            $keepId = (int) $latestUp['id'];
-        }
-
-        $db = db_connect();
-        $db->table('domain_checks')
-            ->where('domain_id', $domainId)
-            ->where('status', 'UP')
-            ->where('id !=', $keepId)
-            ->delete();
     }
 
     private function handleOutageTransition(int $domainId, string $oldStatus, string $newStatus, string $checkedAt): void
