@@ -569,9 +569,114 @@
             100% { transform: rotate(360deg); }
         }
         .music-btn.playing:hover { animation-play-state: paused; }
+
+        /* ── Splash screen ── */
+        .splash {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: linear-gradient(160deg, #0d2b1e 0%, #1b4332 50%, #2d6a4f 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 24px;
+            transition: opacity .8s ease, visibility .8s ease;
+        }
+        .splash.hide {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .splash-bismillah {
+            font-family: 'Amiri', serif;
+            font-size: clamp(1.6rem, 5vw, 2.4rem);
+            color: var(--gold-light);
+            margin-bottom: 28px;
+            letter-spacing: 2px;
+        }
+        .splash-photo-ring {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            padding: 4px;
+            background: conic-gradient(var(--gold-light), var(--gold), var(--gold-light), var(--gold), var(--gold-light));
+            margin: 0 auto 20px;
+        }
+        .splash-photo-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #1b4332;
+        }
+        .splash-photo-inner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center;
+        }
+        .splash-label {
+            font-size: .72rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,.45);
+            margin-bottom: 6px;
+        }
+        .splash-name {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.5rem, 5vw, 2rem);
+            color: var(--white);
+            margin-bottom: 6px;
+        }
+        .splash-event {
+            font-size: .88rem;
+            color: rgba(255,255,255,.55);
+            margin-bottom: 36px;
+        }
+        .splash-btn {
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            color: #1b1b1b;
+            border: none;
+            padding: 16px 42px;
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 28px rgba(201,150,58,.5);
+            transition: transform .2s ease, box-shadow .2s ease;
+            letter-spacing: 1px;
+        }
+        .splash-btn:hover { transform: scale(1.05); box-shadow: 0 12px 36px rgba(201,150,58,.6); }
+        .splash-note {
+            margin-top: 16px;
+            font-size: .72rem;
+            color: rgba(255,255,255,.3);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
     </style>
 </head>
 <body>
+
+<!-- ───── SPLASH ───── -->
+<div class="splash" id="splash">
+    <div class="splash-bismillah">بِسْمِ اللهِ الرَّحْمَنِ الرَّحِيمِ</div>
+    <div class="splash-photo-ring">
+        <div class="splash-photo-inner">
+            <img src="assets/undangan/musa.jpeg" alt="Musa"
+                 onerror="this.outerHTML='<div style=\'background:linear-gradient(135deg,#2d6a4f,#1b4332);width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:serif;font-size:2.5rem;color:#e4b86a\'>M</div>'">
+        </div>
+    </div>
+    <p class="splash-label">Tasyakuran Khitan</p>
+    <h2 class="splash-name">Musa Abdillah Wijaya</h2>
+    <p class="splash-event">Minggu, 9 Agustus 2026</p>
+    <button class="splash-btn" id="splashBtn">🎉 &nbsp; Buka Undangan</button>
+    <p class="splash-note">🎵 &nbsp; musik akan otomatis dimainkan</p>
+</div>
 
 <div class="top-border"></div>
 
@@ -789,46 +894,6 @@
             hero.appendChild(s);
         }
     })();
-
-    // ── 6. Audio autoplay ─────────────────────────────────────────────────
-    const audio = document.getElementById('bgMusic');
-    const musicBtn = document.getElementById('musicBtn');
-
-    function tryPlay() {
-        audio.muted = false;
-        audio.play().then(() => {
-            musicBtn.textContent = '🎵';
-            musicBtn.classList.add('playing');
-        }).catch(() => {});
-        document.removeEventListener('click',   tryPlay);
-        document.removeEventListener('touchstart', tryPlay);
-    }
-
-    // Coba autoplay langsung (muted dulu agar browser izinkan)
-    audio.muted = true;
-    audio.play().then(() => {
-        // berhasil muted — tunggu interaksi pertama lalu unmute
-        document.addEventListener('click',      tryPlay, { once: true });
-        document.addEventListener('touchstart', tryPlay, { once: true });
-    }).catch(() => {
-        // browser blokir sepenuhnya — tunggu interaksi
-        document.addEventListener('click',      tryPlay, { once: true });
-        document.addEventListener('touchstart', tryPlay, { once: true });
-    });
-
-    musicBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        if (audio.paused) {
-            audio.muted = false;
-            audio.play();
-            this.textContent = '🎵';
-            this.classList.add('playing');
-        } else {
-            audio.pause();
-            this.textContent = '🔇';
-            this.classList.remove('playing');
-        }
-    });
 </script>
 
 <!-- Audio -->
@@ -836,6 +901,34 @@
 
 <!-- Music toggle button -->
 <button class="music-btn" id="musicBtn" title="Musik">🔇</button>
+
+<script>
+    // ── 6. Audio + Splash ─────────────────────────────────────────────────
+    const audio    = document.getElementById('bgMusic');
+    const musicBtn = document.getElementById('musicBtn');
+    const splash   = document.getElementById('splash');
+    const splashBtn = document.getElementById('splashBtn');
+
+    // Ikuti state audio
+    audio.addEventListener('play',  () => { musicBtn.textContent = '🎵'; musicBtn.classList.add('playing'); });
+    audio.addEventListener('pause', () => { musicBtn.textContent = '🔇'; musicBtn.classList.remove('playing'); });
+
+    function playAudio() {
+        audio.muted = false;
+        audio.play().catch(err => console.warn('Audio:', err));
+    }
+
+    // Tombol "Buka Undangan" → tutup splash + putar musik
+    splashBtn.addEventListener('click', function () {
+        splash.classList.add('hide');
+        playAudio();
+    });
+
+    // Tombol musik toggle
+    musicBtn.addEventListener('click', function () {
+        if (audio.paused) { playAudio(); } else { audio.pause(); }
+    });
+</script>
 
 </body>
 </html>
