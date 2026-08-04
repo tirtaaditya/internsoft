@@ -658,6 +658,83 @@
             align-items: center;
             gap: 5px;
         }
+        /* ── Komentar ── */
+        .komentar-section {
+            background: var(--cream);
+            padding: 50px 24px;
+        }
+        .komentar-form {
+            max-width: 500px;
+            margin: 0 auto 36px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .komentar-form input,
+        .komentar-form textarea {
+            width: 100%;
+            padding: 13px 16px;
+            border: 1.5px solid #ddd;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: .9rem;
+            background: var(--white);
+            color: #333;
+            outline: none;
+            transition: border-color .2s;
+            resize: none;
+        }
+        .komentar-form input:focus,
+        .komentar-form textarea:focus { border-color: var(--green); }
+        .komentar-form button {
+            background: linear-gradient(135deg, var(--green), var(--green-mid));
+            color: var(--white);
+            border: none;
+            padding: 13px;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: .95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity .2s;
+        }
+        .komentar-form button:disabled { opacity: .6; cursor: not-allowed; }
+        .k-msg { font-size: .8rem; text-align: center; min-height: 18px; }
+        .k-msg.ok  { color: #2d6a4f; }
+        .k-msg.err { color: #c0392b; }
+        .komentar-list {
+            max-width: 500px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .k-loading { text-align: center; color: #aaa; font-size: .85rem; padding: 20px; }
+        .k-item {
+            background: var(--white);
+            border-radius: 14px;
+            padding: 16px 18px;
+            box-shadow: 0 2px 12px rgba(0,0,0,.07);
+            border-left: 4px solid var(--gold);
+            animation: fadeUp .4s ease both;
+        }
+        .k-item-nama {
+            font-weight: 600;
+            color: var(--green);
+            font-size: .9rem;
+        }
+        .k-item-pesan {
+            color: #555;
+            font-size: .88rem;
+            margin-top: 4px;
+            line-height: 1.6;
+        }
+        .k-item-waktu {
+            font-size: .7rem;
+            color: #bbb;
+            margin-top: 6px;
+        }
+        .k-empty { text-align: center; color: #bbb; font-size: .85rem; padding: 20px; }
     </style>
 </head>
 <body>
@@ -797,6 +874,25 @@
     </div>
 </section>
 
+<!-- ───── KOMENTAR ───── -->
+<section class="komentar-section">
+    <h3 class="section-heading reveal">Ucapan &amp; Doa</h3>
+    <p class="reveal" style="text-align:center;color:#888;font-size:.85rem;margin-bottom:28px">Tinggalkan ucapan dan doa untuk Musa</p>
+
+    <!-- Form -->
+    <form class="komentar-form reveal" id="komentarForm">
+        <input type="text" id="kNama" placeholder="Nama kamu" maxlength="80" required autocomplete="off">
+        <textarea id="kPesan" placeholder="Tulis ucapan / doa..." maxlength="500" rows="3" required></textarea>
+        <button type="submit" id="kSubmit">Kirim Ucapan 💌</button>
+        <p id="kMsg" class="k-msg"></p>
+    </form>
+
+    <!-- List komentar -->
+    <div class="komentar-list" id="komentarList">
+        <div class="k-loading">Memuat ucapan...</div>
+    </div>
+</section>
+
 <!-- ───── CLOSING ───── -->
 <section class="closing-section">
     <div class="closing-arabic">اَلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللهِ وَبَرَكَاتُهُ</div>
@@ -927,6 +1023,80 @@
     musicBtn.addEventListener('click', function () {
         if (audio.paused) { playAudio(); } else { audio.pause(); }
     });
+
+    // ── 7. Komentar ───────────────────────────────────────────────────────
+    const API = '/api/undangan/komentar';
+
+    function formatWaktu(str) {
+        const d = new Date(str.replace(' ', 'T'));
+        return d.toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' })
+             + ' ' + d.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
+    }
+
+    function renderKomentar(list) {
+        const el = document.getElementById('komentarList');
+        if (!list.length) {
+            el.innerHTML = '<p class="k-empty">Belum ada ucapan. Jadilah yang pertama! 🌟</p>';
+            return;
+        }
+        el.innerHTML = list.map(k => `
+            <div class="k-item">
+                <div class="k-item-nama">✨ ${k.nama.replace(/</g,'&lt;')}</div>
+                <div class="k-item-pesan">${k.pesan.replace(/</g,'&lt;').replace(/\n/g,'<br>')}</div>
+                <div class="k-item-waktu">${formatWaktu(k.waktu)}</div>
+            </div>`).join('');
+    }
+
+    function loadKomentar() {
+        fetch(API)
+            .then(r => r.json())
+            .then(json => renderKomentar(json.data || []))
+            .catch(() => {
+                document.getElementById('komentarList').innerHTML =
+                    '<p class="k-empty">Gagal memuat ucapan.</p>';
+            });
+    }
+
+    document.getElementById('komentarForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const nama   = document.getElementById('kNama').value.trim();
+        const pesan  = document.getElementById('kPesan').value.trim();
+        const btn    = document.getElementById('kSubmit');
+        const msg    = document.getElementById('kMsg');
+
+        btn.disabled = true;
+        btn.textContent = 'Mengirim...';
+        msg.textContent = '';
+        msg.className = 'k-msg';
+
+        const body = new URLSearchParams({ nama, pesan });
+        fetch(API, { method: 'POST', body })
+            .then(r => r.json())
+            .then(json => {
+                if (json.ok) {
+                    document.getElementById('kNama').value  = '';
+                    document.getElementById('kPesan').value = '';
+                    msg.textContent = '✅ Ucapan terkirim, terima kasih!';
+                    msg.classList.add('ok');
+                    loadKomentar();
+                } else {
+                    msg.textContent = json.error || 'Gagal mengirim.';
+                    msg.classList.add('err');
+                }
+            })
+            .catch(() => {
+                msg.textContent = 'Gagal mengirim, cek koneksi.';
+                msg.classList.add('err');
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.textContent = 'Kirim Ucapan 💌';
+            });
+    });
+
+    loadKomentar();
+    // refresh tiap 30 detik
+    setInterval(loadKomentar, 30000);
 </script>
 
 </body>

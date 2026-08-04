@@ -30,3 +30,7 @@ $routes->post('dashboard/domains/(:num)/delete', 'DashboardController::deleteDom
 $routes->post('dashboard/domains/(:num)/contacts', 'DashboardController::storeContact/$1');
 $routes->post('dashboard/contacts/(:num)/update', 'DashboardController::updateContact/$1');
 $routes->post('dashboard/contacts/(:num)/delete', 'DashboardController::deleteContact/$1');
+
+// Undangan komentar
+$routes->get('api/undangan/komentar',  'UndanganController::getKomentar');
+$routes->post('api/undangan/komentar', 'UndanganController::simpanKomentar');
