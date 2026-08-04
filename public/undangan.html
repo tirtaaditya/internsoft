@@ -127,7 +127,6 @@
             border-radius: 50%;
             padding: 5px;
             background: conic-gradient(var(--gold-light), var(--gold), var(--gold-light), var(--gold), var(--gold-light));
-            animation: rotateSlow 12s linear infinite;
             margin: 0 auto;
         }
         @keyframes rotateSlow { to { transform: rotate(360deg); } }
@@ -429,9 +428,11 @@
             font-size: clamp(1.4rem, 6vw, 1.9rem);
             font-weight: 700;
             letter-spacing: 6px;
-            color: var(--white);
+            color: #ffffff;
             margin: 4px 0 14px;
             user-select: all;
+            text-shadow: none;
+            -webkit-text-fill-color: #ffffff;
         }
         .bank-holder {
             font-size: .82rem;
@@ -540,6 +541,35 @@
             .hero-title { font-size: 2.1rem; }
         }
     </style>
+    <style>
+        /* ── Music button ── */
+        .music-btn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 999;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--green), var(--green-mid));
+            border: 2px solid var(--gold);
+            color: var(--white);
+            font-size: 1.3rem;
+            cursor: pointer;
+            box-shadow: 0 4px 18px rgba(0,0,0,.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+        .music-btn:hover { transform: scale(1.1); box-shadow: 0 6px 24px rgba(0,0,0,.4); }
+        .music-btn.playing { animation: spinNote 4s linear infinite; }
+        @keyframes spinNote {
+            0%   { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .music-btn.playing:hover { animation-play-state: paused; }
+    </style>
 </head>
 <body>
 
@@ -566,7 +596,7 @@
     </div>
 
     <h2 class="child-name">Musa Abdillah Wijaya</h2>
-    <p class="child-desc">Putra dari Bapak &amp; Ibu</p>
+    <p class="child-desc">Putra dari Keluarga Bapak Fendrik Wijaya</p>
 
     <p class="scroll-hint">▼ &nbsp; gulir ke bawah</p>
 </section>
@@ -759,7 +789,53 @@
             hero.appendChild(s);
         }
     })();
+
+    // ── 6. Audio autoplay ─────────────────────────────────────────────────
+    const audio = document.getElementById('bgMusic');
+    const musicBtn = document.getElementById('musicBtn');
+
+    function tryPlay() {
+        audio.muted = false;
+        audio.play().then(() => {
+            musicBtn.textContent = '🎵';
+            musicBtn.classList.add('playing');
+        }).catch(() => {});
+        document.removeEventListener('click',   tryPlay);
+        document.removeEventListener('touchstart', tryPlay);
+    }
+
+    // Coba autoplay langsung (muted dulu agar browser izinkan)
+    audio.muted = true;
+    audio.play().then(() => {
+        // berhasil muted — tunggu interaksi pertama lalu unmute
+        document.addEventListener('click',      tryPlay, { once: true });
+        document.addEventListener('touchstart', tryPlay, { once: true });
+    }).catch(() => {
+        // browser blokir sepenuhnya — tunggu interaksi
+        document.addEventListener('click',      tryPlay, { once: true });
+        document.addEventListener('touchstart', tryPlay, { once: true });
+    });
+
+    musicBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (audio.paused) {
+            audio.muted = false;
+            audio.play();
+            this.textContent = '🎵';
+            this.classList.add('playing');
+        } else {
+            audio.pause();
+            this.textContent = '🔇';
+            this.classList.remove('playing');
+        }
+    });
 </script>
+
+<!-- Audio -->
+<audio id="bgMusic" src="assets/undangan/lagu-musa.mp3" loop preload="auto"></audio>
+
+<!-- Music toggle button -->
+<button class="music-btn" id="musicBtn" title="Musik">🔇</button>
 
 </body>
 </html>
