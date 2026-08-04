@@ -1097,6 +1097,12 @@
     loadKomentar();
     // refresh tiap 30 detik
     setInterval(loadKomentar, 30000);
+
+    // Auto-isi nama dari URL param ?untuk=
+    const paramNama = new URLSearchParams(window.location.search).get('untuk') || '';
+    if (paramNama.trim()) {
+        document.getElementById('kNama').value = paramNama.trim();
+    }
 </script>
 
 </body>
