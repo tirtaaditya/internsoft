@@ -123,7 +123,7 @@
                         </div>
                         <h3>Pembuatan Aplikasi</h3>
                         <p>Kami membangun aplikasi website dan mobile yang modern, responsif, dan sesuai kebutuhan.</p>
-                        <a href="https://wa.me/628999188009?text=Halo%20Internsoft%2C%20saya%20ingin%20konsultasi%20tentang%20pembuatan%20aplikasi." target="_blank" rel="noopener">Konsultasi via WhatsApp</a>
+                        <a href="https://wa.me/6285655666546?text=Halo%20Internsoft%2C%20saya%20ingin%20konsultasi%20tentang%20pembuatan%20aplikasi." target="_blank" rel="noopener">Konsultasi via WhatsApp</a>
                     </article>
 
                     <article class="service-card-v2" data-reveal>
@@ -132,7 +132,7 @@
                         </div>
                         <h3>Instalasi Komputer</h3>
                         <p>Layanan instalasi sistem operasi, software, dan konfigurasi komputer untuk kebutuhan Anda.</p>
-                        <a href="https://wa.me/628999188009?text=Halo%20Internsoft%2C%20saya%20ingin%20konsultasi%20tentang%20layanan%20instalasi%20komputer." target="_blank" rel="noopener">Konsultasi via WhatsApp</a>
+                        <a href="https://wa.me/6285655666546?text=Halo%20Internsoft%2C%20saya%20ingin%20konsultasi%20tentang%20layanan%20instalasi%20komputer." target="_blank" rel="noopener">Konsultasi via WhatsApp</a>
                     </article>
                 </div>
             </div>
@@ -149,7 +149,7 @@
                         Internsoft Technology Solutions hadir memberikan layanan teknologi informasi yang profesional,
                         tepat, dan terpercaya untuk individu maupun bisnis.
                     </p>
-                    <a href="https://wa.me/628999188009?text=Halo%20Internsoft%2C%20saya%20ingin%20konsultasi." target="_blank" rel="noopener" class="btn btn-primary">Konsultasi Sekarang</a>
+                    <a href="https://wa.me/6285655666546?text=Halo%20Internsoft%2C%20saya%20ingin%20konsultasi." target="_blank" rel="noopener" class="btn btn-primary">Konsultasi Sekarang</a>
                 </div>
 
                 <div class="stats-grid" data-reveal-group>
@@ -167,7 +167,7 @@
                         <h3>Punya Kebutuhan Lain?</h3>
                         <p>Kami siap membantu mewujudkan solusi terbaik untuk bisnis Anda.</p>
                     </div>
-                    <a href="https://wa.me/628999188009" target="_blank" rel="noopener" class="btn btn-primary cta-phone">Hubungi Kami</a>
+                    <a href="https://wa.me/6285655666546" target="_blank" rel="noopener" class="btn btn-primary cta-phone">Hubungi Kami</a>
                 </div>
             </div>
         </section>
@@ -205,7 +205,7 @@
             <div data-reveal>
                 <h4>Hubungi Kami</h4>
                 <ul>
-                    <li><a href="https://wa.me/628999188009" target="_blank" rel="noopener">Chat WhatsApp</a></li>
+                    <li><a href="https://wa.me/6285655666546" target="_blank" rel="noopener">Chat WhatsApp</a></li>
                     <li><a href="#kontak">Konsultasi</a></li>
                 </ul>
             </div>

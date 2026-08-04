@@ -20,7 +20,7 @@ class CompanyProfileController extends BaseController
     public function monitoringServer()
     {
         $canonical = base_url('monitoring-server');
-        $waUrl = 'https://wa.me/628999188009?text=' . rawurlencode(
+        $waUrl = 'https://wa.me/6285655666546?text=' . rawurlencode(
             'Halo Internsoft, saya ingin konsultasi/info tentang jasa monitoring server.'
         );
 
@@ -35,7 +35,7 @@ class CompanyProfileController extends BaseController
                         '@type' => 'Organization',
                         'name' => 'Internsoft Technology Solutions',
                         'url' => base_url('/'),
-                        'telephone' => '+628999188009',
+                        'telephone' => '+6285655666546',
                     ],
                     'areaServed' => 'ID',
                     'description' => 'Layanan monitoring server dan website 24/7 gratis dengan notifikasi WhatsApp saat situs down atau up.',
