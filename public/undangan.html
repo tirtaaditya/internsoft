@@ -784,8 +784,6 @@
 
 <!-- ───── GREETING ───── -->
 <section class="greeting">
-    <p class="kepada-label">Kepada Yth.</p>
-    <h2 class="guest-name" id="guestName">Bapak/Ibu/Saudara/i</h2>
     <p class="invite-text">
         Dengan penuh rasa syukur kepada Allah SWT, kami mengundang Anda untuk hadir
         dan memberikan doa restu pada acara <strong>Tasyakuran Khitan</strong> putra kami,
@@ -910,14 +908,7 @@
 <div class="bottom-border"></div>
 
 <script>
-    // ── 1. Guest name from URL param ──────────────────────────────────────
-    (function () {
-        const params = new URLSearchParams(window.location.search);
-        const name   = params.get('untuk') || params.get('nama');
-        if (name && name.trim()) {
-            document.getElementById('guestName').textContent = name.trim();
-        }
-    })();
+
 
     // ── 2. Countdown ──────────────────────────────────────────────────────
     const eventDate = new Date('2026-08-09T10:00:00');
@@ -1098,11 +1089,7 @@
     // refresh tiap 30 detik
     setInterval(loadKomentar, 30000);
 
-    // Auto-isi nama dari URL param ?untuk=
-    const paramNama = new URLSearchParams(window.location.search).get('untuk') || '';
-    if (paramNama.trim()) {
-        document.getElementById('kNama').value = paramNama.trim();
-    }
+
 </script>
 
 </body>
