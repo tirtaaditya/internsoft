@@ -637,7 +637,7 @@ body.nav-open {
 }
 
 .services-v2 .container {
-    max-width: 1180px;
+    max-width: 1500px;
     padding-left: 24px;
     padding-right: 24px;
 }
@@ -676,8 +676,8 @@ body.nav-open {
 
 .service-grid-v2 {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 16px;
     width: 100%;
     margin-top: 0;
 }

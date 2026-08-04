@@ -134,6 +134,15 @@
                         <p>Layanan instalasi sistem operasi, software, dan konfigurasi komputer untuk kebutuhan Anda.</p>
                         <a href="https://wa.me/6285655666546?text=Halo%20Internsoft%2C%20saya%20ingin%20konsultasi%20tentang%20layanan%20instalasi%20komputer." target="_blank" rel="noopener">Konsultasi via WhatsApp</a>
                     </article>
+
+                    <article class="service-card-v2" data-reveal>
+                        <div class="service-image">
+                            <img src="<?= base_url('assets/img/tentang-kami-undangan-digital.png') ?>" alt="Undangan Digital">
+                        </div>
+                        <h3>Undangan Digital</h3>
+                        <p>Undangan pernikahan, khitan, dan acara spesial lainnya dalam format digital yang modern, elegan, dan mudah dibagikan.</p>
+                        <a href="<?= base_url('undangan-digital') ?>">Selengkapnya →</a>
+                    </article>
                 </div>
             </div>
         </section>

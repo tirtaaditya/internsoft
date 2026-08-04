@@ -7,6 +7,9 @@ $routes->get('/', 'CompanyProfileController::index');
 $routes->get('monitoring-server', 'CompanyProfileController::monitoringServer');
 $routes->get('jasa-monitoring-server', 'CompanyProfileController::monitoringServer');
 
+$routes->get('undangan-digital', 'CompanyProfileController::undanganDigital');
+$routes->get('jasa-undangan-digital', 'CompanyProfileController::undanganDigital');
+
 $routes->get('register', 'AuthController::register');
 $routes->post('register', 'AuthController::register');
 

@@ -17,6 +17,71 @@ class CompanyProfileController extends BaseController
         ]);
     }
 
+    public function undanganDigital()
+    {
+        $canonical = base_url('undangan-digital');
+        $waUrl = 'https://wa.me/6285655666546?text=' . rawurlencode(
+            'Halo Internsoft, saya ingin pesan/konsultasi undangan digital.'
+        );
+
+        $faqs = [
+            ['q' => 'Berapa lama proses pembuatan undangan?', 'a' => 'Rata-rata 1–3 jam kerja setelah data lengkap diterima. Untuk desain custom yang kompleks bisa 1 hari kerja.'],
+            ['q' => 'Apakah bisa request desain sendiri?', 'a' => 'Ya! Kamu bisa request tema, warna, font, foto, bahkan layout sesuai keinginan. Tim kami akan mewujudkannya.'],
+            ['q' => 'Bagaimana cara kerja QR buku tamu?', 'a' => 'Kami buatkan QR code unik untuk acaramu. Tamu cukup scan QR → isi nama & konfirmasi kehadiran → data langsung tersimpan.'],
+            ['q' => 'Bagaimana cara membagikan undangan?', 'a' => 'Undangan berupa link URL yang bisa dikirim via WhatsApp, Instagram, SMS, atau platform apa saja. Satu link untuk semua tamu.'],
+            ['q' => 'Apakah nama tamu bisa berbeda-beda tiap link?', 'a' => 'Ya, tersedia di paket Premium ke atas. Setiap tamu mendapat link personal dengan namanya masing-masing.'],
+            ['q' => 'Berapa lama link undangan aktif?', 'a' => 'Tergantung paket: Starter 3 bulan, Premium 6 bulan, Eksklusif 1 tahun. Bisa diperpanjang dengan biaya tambahan.'],
+            ['q' => 'Bagaimana cara pembayaran?', 'a' => 'Transfer bank / e-wallet setelah deal. Undangan dikirim setelah pembayaran dikonfirmasi.'],
+        ];
+
+        $jsonLd = json_encode([
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                [
+                    '@type' => 'Service',
+                    'name' => 'Jasa Undangan Digital',
+                    'serviceType' => 'Digital Invitation',
+                    'provider' => [
+                        '@type' => 'Organization',
+                        'name' => 'Internsoft Technology Solutions',
+                        'url' => base_url('/'),
+                        'telephone' => '+6285655666546',
+                    ],
+                    'areaServed' => 'ID',
+                    'description' => 'Jasa pembuatan undangan digital murah untuk pernikahan, khitan, ulang tahun. Lengkap dengan QR buku tamu, kirim via WA, desain custom.',
+                    'url' => $canonical,
+                    'offers' => [
+                        '@type' => 'AggregateOffer',
+                        'lowPrice' => '10000',
+                        'highPrice' => '50000',
+                        'priceCurrency' => 'IDR',
+                    ],
+                ],
+                [
+                    '@type' => 'FAQPage',
+                    'mainEntity' => array_map(fn($f) => [
+                        '@type' => 'Question',
+                        'name' => $f['q'],
+                        'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f['a']],
+                    ], $faqs),
+                ],
+            ],
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        return view('company_profile/undangan-digital', [
+            'title'           => 'Jasa Undangan Digital Murah & Modern — Internsoft',
+            'metaDescription' => 'Pesan undangan digital murah mulai Rp50.000. Desain custom, kirim via WhatsApp, QR buku tamu, animasi modern. Tersedia untuk pernikahan, khitan, ulang tahun.',
+            'metaKeywords'    => 'undangan digital, undangan online murah, undangan pernikahan digital, undangan khitan digital, undangan digital indonesia, jasa undangan digital',
+            'canonicalUrl'    => $canonical,
+            'ogTitle'         => 'Jasa Undangan Digital Murah & Modern — Internsoft',
+            'ogDescription'   => 'Undangan digital mulai Rp50.000. Kirim via WA, QR buku tamu, desain custom. Pesan sekarang!',
+            'ogImage'         => base_url('assets/img/tentang-kami-undangan-digital.png'),
+            'jsonLd'          => $jsonLd,
+            'waUrl'           => $waUrl,
+            'faqs'            => $faqs,
+        ]);
+    }
+
     public function monitoringServer()
     {
         $canonical = base_url('monitoring-server');
