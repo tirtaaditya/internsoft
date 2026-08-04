@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Undangan Khitan — Musa Abdillah Wijaya</title>
+    <meta property="og:title" content="Undangan Tasyakuran Khitan — Musa Abdillah Wijaya">
+    <meta property="og:description" content="9 Agustus 2026 · Jl. Pisangan Baru Selatan">
+    <meta property="og:image" content="assets/img/musa.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;500;600&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green:       #1b4332;
+            --green-mid:   #2d6a4f;
+            --gold:        #c9963a;
+            --gold-light:  #e4b86a;
+            --cream:       #fdf8f0;
+            --white:       #ffffff;
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--cream);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* ── Top border ── */
+        .top-border {
+            height: 6px;
+            background: linear-gradient(90deg, var(--green), var(--gold), var(--green-mid), var(--gold-light), var(--green));
+        }
+
+        /* ── HERO ── */
+        .hero {
+            background: linear-gradient(160deg, #0d2b1e 0%, var(--green) 40%, var(--green-mid) 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 60px 24px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 60% 40% at 20% 30%, rgba(201,150,58,.12) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 40% at 80% 70%, rgba(201,150,58,.10) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        /* floating sparkles */
+        .sparkle {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--gold-light);
+            opacity: 0;
+            animation: sparkleAnim linear infinite;
+        }
+        @keyframes sparkleAnim {
+            0%   { transform: translateY(110vh) scale(0); opacity: 0; }
+            5%   { opacity: .5; }
+            90%  { opacity: .3; }
+            100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+        }
+
+        .bismillah {
+            font-family: 'Amiri', serif;
+            font-size: clamp(1.8rem, 5vw, 2.8rem);
+            color: var(--gold-light);
+            margin-bottom: 6px;
+            animation: fadeDown .9s ease both;
+            text-shadow: 0 2px 12px rgba(0,0,0,.4);
+            letter-spacing: 2px;
+        }
+        .hero-eyebrow {
+            font-size: .75rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,.55);
+            margin-bottom: 8px;
+            animation: fadeDown .9s .15s ease both;
+        }
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.4rem, 8vw, 4rem);
+            color: var(--white);
+            line-height: 1.15;
+            animation: fadeDown .9s .25s ease both;
+        }
+        .hero-title span { color: var(--gold-light); }
+
+        .ornament-line {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--gold-light);
+            font-size: 1.1rem;
+            margin: 18px 0;
+            animation: fadeIn 1s .45s ease both;
+        }
+        .ornament-line::before,
+        .ornament-line::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+            max-width: 100px;
+        }
+
+        /* Photo */
+        .photo-wrap {
+            animation: fadeUp .9s .55s ease both;
+            margin: 4px 0 16px;
+        }
+        .photo-ring {
+            width: 190px;
+            height: 190px;
+            border-radius: 50%;
+            padding: 5px;
+            background: conic-gradient(var(--gold-light), var(--gold), var(--gold-light), var(--gold), var(--gold-light));
+            animation: rotateSlow 12s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes rotateSlow { to { transform: rotate(360deg); } }
+        .photo-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+            background: var(--green-mid);
+            border: 4px solid var(--green);
+        }
+        .photo-inner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center;
+            display: block;
+        }
+        .photo-fallback {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            color: var(--gold-light);
+            background: linear-gradient(135deg, var(--green), var(--green-mid));
+        }
+
+        .child-name {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.6rem, 5vw, 2.2rem);
+            color: var(--gold-light);
+            animation: fadeUp .9s .65s ease both;
+        }
+        .child-desc {
+            color: rgba(255,255,255,.65);
+            font-size: .9rem;
+            margin-top: 4px;
+            animation: fadeUp .9s .75s ease both;
+        }
+
+        .scroll-hint {
+            margin-top: 36px;
+            color: rgba(255,255,255,.4);
+            font-size: .75rem;
+            letter-spacing: 2px;
+            animation: fadeIn 1.5s 1.5s ease both, bounce 2s 2s ease-in-out infinite;
+        }
+        @keyframes bounce {
+            0%,100% { transform: translateY(0); }
+            50%      { transform: translateY(6px); }
+        }
+
+        /* ── GREETING ── */
+        .greeting {
+            background: var(--white);
+            padding: 50px 24px;
+            text-align: center;
+        }
+        .kepada-label {
+            font-size: .72rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #aaa;
+            margin-bottom: 6px;
+        }
+        .guest-name {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.6rem, 5vw, 2rem);
+            color: var(--green);
+            margin-bottom: 18px;
+        }
+        .invite-text {
+            color: #666;
+            line-height: 1.9;
+            max-width: 520px;
+            margin: 0 auto;
+            font-size: .95rem;
+        }
+        .invite-text strong { color: var(--green); }
+
+        /* ── COUNTDOWN ── */
+        .countdown-section {
+            background: var(--cream);
+            padding: 44px 24px;
+            text-align: center;
+        }
+        .section-heading {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.65rem;
+            color: var(--green);
+            margin-bottom: 8px;
+        }
+        .section-heading + p { color: #888; font-size: .85rem; margin-bottom: 24px; }
+        .countdown-row {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .cd-box {
+            background: var(--white);
+            border-radius: 14px;
+            padding: 16px 22px;
+            min-width: 76px;
+            box-shadow: 0 4px 18px rgba(0,0,0,.07);
+            border-bottom: 3px solid var(--gold);
+        }
+        .cd-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            color: var(--green);
+            font-weight: 700;
+            line-height: 1;
+        }
+        .cd-lbl {
+            font-size: .65rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #aaa;
+            margin-top: 4px;
+        }
+        .cd-done {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            color: var(--green);
+            padding: 16px;
+        }
+
+        /* ── DETAILS ── */
+        .details-section {
+            background: var(--white);
+            padding: 50px 24px;
+        }
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            max-width: 680px;
+            margin: 30px auto 0;
+        }
+        .detail-card {
+            background: var(--cream);
+            border-radius: 18px;
+            padding: 28px 20px;
+            text-align: center;
+            border-top: 4px solid var(--gold);
+            transition: transform .25s ease, box-shadow .25s ease;
+        }
+        .detail-card:hover { transform: translateY(-5px); box-shadow: 0 12px 32px rgba(0,0,0,.1); }
+        .d-icon { font-size: 2.4rem; margin-bottom: 10px; }
+        .d-label {
+            font-size: .68rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #aaa;
+            margin-bottom: 6px;
+        }
+        .d-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            color: var(--green);
+            font-weight: 700;
+        }
+        .d-sub { font-size: .82rem; color: #888; margin-top: 3px; }
+
+        /* ── LOCATION ── */
+        .location-section {
+            background: var(--green);
+            padding: 50px 24px;
+            text-align: center;
+            color: var(--white);
+        }
+        .location-section .section-heading { color: var(--gold-light); }
+        .location-section .section-heading + p { color: rgba(255,255,255,.55); }
+        .address-box {
+            background: rgba(255,255,255,.08);
+            border: 1px solid rgba(201,150,58,.35);
+            border-radius: 18px;
+            padding: 28px 30px;
+            max-width: 480px;
+            margin: 24px auto;
+            backdrop-filter: blur(6px);
+        }
+        .address-icon { font-size: 2rem; margin-bottom: 10px; opacity: .8; }
+        .address-text {
+            font-size: 1rem;
+            line-height: 1.9;
+            color: rgba(255,255,255,.9);
+        }
+        .address-patokan {
+            display: inline-block;
+            background: rgba(201,150,58,.25);
+            border: 1px solid rgba(201,150,58,.4);
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: .82rem;
+            color: var(--gold-light);
+            margin-top: 10px;
+        }
+        .maps-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--gold);
+            color: var(--white);
+            padding: 13px 28px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: .9rem;
+            font-weight: 600;
+            transition: all .25s ease;
+            margin-top: 6px;
+            box-shadow: 0 6px 20px rgba(0,0,0,.25);
+        }
+        .maps-btn:hover { background: var(--gold-light); transform: translateY(-2px); }
+
+        /* ── TRANSFER ── */
+        .transfer-section {
+            background: var(--cream);
+            padding: 50px 24px;
+            text-align: center;
+        }
+        .transfer-section .section-heading + p { color: #888; font-size: .85rem; margin-bottom: 24px; }
+        .bank-card {
+            background: linear-gradient(135deg, #0d2b1e 0%, var(--green) 55%, var(--green-mid) 100%);
+            border-radius: 22px;
+            padding: 32px 28px;
+            max-width: 400px;
+            margin: 0 auto;
+            color: var(--white);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 16px 48px rgba(27,67,50,.4);
+        }
+        .bank-card::after {
+            content: '☪';
+            position: absolute;
+            right: -10px;
+            top: -20px;
+            font-size: 9rem;
+            opacity: .05;
+            pointer-events: none;
+        }
+        .bank-chip {
+            width: 44px;
+            height: 34px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            border-radius: 6px;
+            margin: 0 auto 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.3);
+        }
+        .bank-label {
+            font-size: .7rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--gold-light);
+            margin-bottom: 4px;
+        }
+        .bank-num {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.5rem, 6vw, 2rem);
+            font-weight: 700;
+            letter-spacing: 4px;
+            color: var(--white);
+            margin: 6px 0 4px;
+            user-select: all;
+        }
+        .bank-holder {
+            font-size: .88rem;
+            color: rgba(255,255,255,.75);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .copy-btn {
+            margin-top: 18px;
+            background: rgba(255,255,255,.12);
+            border: 1px solid rgba(255,255,255,.25);
+            color: var(--white);
+            padding: 9px 22px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: .82rem;
+            font-family: 'Poppins', sans-serif;
+            transition: all .25s ease;
+        }
+        .copy-btn:hover { background: rgba(255,255,255,.22); }
+        .copy-btn.copied { background: rgba(100,210,120,.3); border-color: rgba(100,210,120,.5); }
+
+        /* ── CLOSING ── */
+        .closing-section {
+            background: linear-gradient(160deg, #0d2b1e 0%, var(--green) 100%);
+            padding: 60px 24px 50px;
+            text-align: center;
+            color: var(--white);
+        }
+        .closing-arabic {
+            font-family: 'Amiri', serif;
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
+            color: var(--gold-light);
+            margin-bottom: 12px;
+            letter-spacing: 2px;
+        }
+        .closing-text {
+            color: rgba(255,255,255,.75);
+            line-height: 1.9;
+            font-size: .92rem;
+            max-width: 480px;
+            margin: 0 auto 28px;
+        }
+        .ttd-section {
+            border-top: 1px solid rgba(255,255,255,.1);
+            padding-top: 24px;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+        .ttd-label { font-size: .75rem; color: rgba(255,255,255,.4); letter-spacing: 2px; text-transform: uppercase; }
+        .ttd-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            color: var(--gold-light);
+            margin-top: 6px;
+        }
+
+        /* ── Bottom border ── */
+        .bottom-border {
+            height: 6px;
+            background: linear-gradient(90deg, var(--green), var(--gold), var(--green-mid), var(--gold-light), var(--green));
+        }
+
+        /* ── Animations ── */
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        /* ── Scroll reveal ── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity .65s ease, transform .65s ease;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 400px) {
+            .bank-num { letter-spacing: 1px; }
+            .hero-title { font-size: 2.1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-border"></div>
+
+<!-- ───── HERO ───── -->
+<section class="hero" id="hero">
+    <!-- sparkles injected by JS -->
+
+    <div class="bismillah">بِسْمِ اللهِ الرَّحْمَنِ الرَّحِيمِ</div>
+
+    <p class="hero-eyebrow">Tasyakuran</p>
+    <h1 class="hero-title">Khitan <span>Putra</span></h1>
+
+    <div class="ornament-line">✦ ✦ ✦</div>
+
+    <div class="photo-wrap">
+        <div class="photo-ring">
+            <div class="photo-inner">
+                <img src="assets/img/musa.jpg" alt="Musa Abdillah Wijaya"
+                     onerror="this.outerHTML='<div class=\'photo-fallback\'>M</div>'">
+            </div>
+        </div>
+    </div>
+
+    <h2 class="child-name">Musa Abdillah Wijaya</h2>
+    <p class="child-desc">Putra dari Bapak &amp; Ibu</p>
+
+    <p class="scroll-hint">▼ &nbsp; gulir ke bawah</p>
+</section>
+
+<!-- ───── GREETING ───── -->
+<section class="greeting">
+    <p class="kepada-label">Kepada Yth.</p>
+    <h2 class="guest-name" id="guestName">Bapak/Ibu/Saudara/i</h2>
+    <p class="invite-text">
+        Dengan penuh rasa syukur kepada Allah SWT, kami mengundang Anda untuk hadir
+        dan memberikan doa restu pada acara <strong>Tasyakuran Khitan</strong> putra kami,
+        <strong>Musa Abdillah Wijaya</strong>. Kehadiran dan doa Anda sangat berarti bagi kami.
+    </p>
+</section>
+
+<!-- ───── COUNTDOWN ───── -->
+<section class="countdown-section">
+    <h3 class="section-heading reveal">Menghitung Hari</h3>
+    <p class="reveal">Acara akan segera berlangsung</p>
+    <div class="countdown-row" id="countdown">
+        <div class="cd-box"><div class="cd-num" id="cd-h">--</div><div class="cd-lbl">Hari</div></div>
+        <div class="cd-box"><div class="cd-num" id="cd-j">--</div><div class="cd-lbl">Jam</div></div>
+        <div class="cd-box"><div class="cd-num" id="cd-m">--</div><div class="cd-lbl">Menit</div></div>
+        <div class="cd-box"><div class="cd-num" id="cd-s">--</div><div class="cd-lbl">Detik</div></div>
+    </div>
+</section>
+
+<!-- ───── DETAILS ───── -->
+<section class="details-section">
+    <h3 class="section-heading reveal" style="text-align:center">Detail Acara</h3>
+    <div class="detail-grid">
+        <div class="detail-card reveal">
+            <div class="d-icon">📅</div>
+            <div class="d-label">Hari & Tanggal</div>
+            <div class="d-value">Minggu, 9 Agustus</div>
+            <div class="d-sub">2026</div>
+        </div>
+        <div class="detail-card reveal">
+            <div class="d-icon">🕙</div>
+            <div class="d-label">Waktu</div>
+            <div class="d-value">10.00 WIB</div>
+            <div class="d-sub">s.d. selesai</div>
+        </div>
+        <div class="detail-card reveal">
+            <div class="d-icon">🎉</div>
+            <div class="d-label">Acara</div>
+            <div class="d-value">Tasyakuran Khitan</div>
+            <div class="d-sub">Dress code: Bebas rapi</div>
+        </div>
+    </div>
+</section>
+
+<!-- ───── LOCATION ───── -->
+<section class="location-section">
+    <h3 class="section-heading reveal">Lokasi Acara</h3>
+    <p class="reveal">Kami menunggu kehadiran Anda di</p>
+    <div class="address-box reveal">
+        <div class="address-icon">📍</div>
+        <div class="address-text">
+            Jl. Pisangan Baru Selatan Gg. 1<br>
+            RT 008 / RW 08 No. 6<br>
+            <span class="address-patokan">🏥 Patokan: Klinik Kusuma Putra</span>
+        </div>
+    </div>
+    <a class="maps-btn reveal"
+       href="https://maps.google.com/?q=Jl+Pisangan+Baru+Selatan+Gg+1+RT+008+RW+08+No+6"
+       target="_blank" rel="noopener noreferrer">
+        🗺️ &nbsp; Buka Google Maps
+    </a>
+</section>
+
+<!-- ───── TRANSFER ───── -->
+<section class="transfer-section">
+    <h3 class="section-heading reveal">Kirim Hadiah</h3>
+    <p class="reveal">Bagi yang ingin mengirimkan hadiah via transfer</p>
+    <div class="bank-card reveal">
+        <div class="bank-chip"></div>
+        <div class="bank-label">BCA / Transfer Bank</div>
+        <div class="bank-num" id="noRek">5800432849</div>
+        <div class="bank-holder">a/n Elsha Putriana Dewi</div>
+        <button class="copy-btn" onclick="copyRek()">📋 &nbsp; Salin Nomor Rekening</button>
+    </div>
+</section>
+
+<!-- ───── CLOSING ───── -->
+<section class="closing-section">
+    <div class="closing-arabic">اَلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللهِ وَبَرَكَاتُهُ</div>
+    <p class="closing-text">
+        Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i
+        berkenan hadir dan memberikan doa kepada putra kami. Atas kehadiran dan doa restu
+        Anda, kami ucapkan <em>Jazakumullahu Khairan Katsiran</em>.
+    </p>
+    <div class="ttd-section">
+        <p class="ttd-label">Hormat kami</p>
+        <p class="ttd-name">Keluarga Musa Abdillah</p>
+    </div>
+</section>
+
+<div class="bottom-border"></div>
+
+<script>
+    // ── 1. Guest name from URL param ──────────────────────────────────────
+    (function () {
+        const params = new URLSearchParams(window.location.search);
+        const name   = params.get('untuk') || params.get('nama');
+        if (name && name.trim()) {
+            document.getElementById('guestName').textContent = name.trim();
+        }
+    })();
+
+    // ── 2. Countdown ──────────────────────────────────────────────────────
+    const eventDate = new Date('2026-08-09T10:00:00');
+    function updateCountdown() {
+        const now  = new Date();
+        const diff = eventDate - now;
+        if (diff <= 0) {
+            document.getElementById('countdown').innerHTML =
+                '<p class="cd-done">🎉 Acara sedang berlangsung!</p>';
+            return;
+        }
+        const d = Math.floor(diff / 86400000);
+        const h = Math.floor((diff % 86400000) / 3600000);
+        const m = Math.floor((diff % 3600000)  / 60000);
+        const s = Math.floor((diff % 60000)    / 1000);
+        document.getElementById('cd-h').textContent = String(d).padStart(2,'0');
+        document.getElementById('cd-j').textContent = String(h).padStart(2,'0');
+        document.getElementById('cd-m').textContent = String(m).padStart(2,'0');
+        document.getElementById('cd-s').textContent = String(s).padStart(2,'0');
+    }
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    // ── 3. Copy rekening ──────────────────────────────────────────────────
+    function copyRek() {
+        const num = document.getElementById('noRek').textContent.trim();
+        navigator.clipboard.writeText(num).then(() => {
+            const btn = document.querySelector('.copy-btn');
+            btn.textContent = '✅  Tersalin!';
+            btn.classList.add('copied');
+            setTimeout(() => {
+                btn.textContent = '📋 \u00a0 Salin Nomor Rekening';
+                btn.classList.remove('copied');
+            }, 2500);
+        }).catch(() => {
+            // fallback
+            const ta = document.createElement('textarea');
+            ta.value = num;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            const btn = document.querySelector('.copy-btn');
+            btn.textContent = '✅  Tersalin!';
+            btn.classList.add('copied');
+            setTimeout(() => { btn.textContent = '📋 \u00a0 Salin Nomor Rekening'; btn.classList.remove('copied'); }, 2500);
+        });
+    }
+
+    // ── 4. Scroll reveal ──────────────────────────────────────────────────
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // ── 5. Sparkle particles in hero ─────────────────────────────────────
+    (function () {
+        const hero = document.getElementById('hero');
+        for (let i = 0; i < 18; i++) {
+            const s = document.createElement('div');
+            s.className = 'sparkle';
+            const size = Math.random() * 5 + 3;
+            s.style.cssText = `
+                width:${size}px; height:${size}px;
+                left:${Math.random()*100}%;
+                animation-duration:${6 + Math.random()*8}s;
+                animation-delay:${Math.random()*8}s;
+            `;
+            hero.appendChild(s);
+        }
+    })();
+</script>
+
+</body>
+</html>
